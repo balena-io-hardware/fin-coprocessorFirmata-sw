@@ -16,11 +16,13 @@ It is also possible to build the source and manually flash the Coprocessor howev
 
  - cmake
  - make
- - arm-none-eabi-gcc
+ - arm-none-eabi-gcc*
 
 If using a JLink programmer to externally flash:
 
  - [JLink tools](https://www.segger.com/jlink-software.html)
+
+*Make sure this is in your `$PATH`
 
 #### Building/Flashing
 
