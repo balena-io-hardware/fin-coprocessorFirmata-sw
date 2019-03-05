@@ -1,0 +1,21 @@
+# Build directories
+build/
+builds/
+
+# Generated Files
+*.o
+*.so
+*.lib
+*.a
+
+# CTags
+*tags
+*tags_sorted_by_file
+
+# Backup files
+*~
+
+# Misc
+*.DS_Store
+.vscode
+
