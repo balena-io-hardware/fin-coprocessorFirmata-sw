@@ -122,6 +122,9 @@ bool setPWM(unsigned int pin_no, byte duty_cycle);
 /* GPIO Functions */
 void deviceMode(unsigned int pin_no, unsigned int mode);
 
+/* RTC Functions */
+void triggerEvent(RTCDRV_TimerType_t type, uint32_t timeout, RTCDRV_Callback_t callback, void *user);
+
 /* I2C Functions */
 void initI2C(void);
 // TODO
