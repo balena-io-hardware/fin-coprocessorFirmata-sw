@@ -48,7 +48,7 @@ extern "C" {
 #define MODE_I2C         4
 #define MODE_SPI         5
 #define MODE_ANALOG_OUT	 12
-#define SLEEP_PIN        14
+#define SLEEP_PIN        16
 
 /* balenaFin Digital Pin Modes */
 #define GPIO_INPUT_PULLUP gpioModeInputPull
