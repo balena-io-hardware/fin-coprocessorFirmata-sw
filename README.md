@@ -69,7 +69,7 @@ Sysex-based sub-commands (0x00 - 0x7F) are used for an extended command set.
 This SYSEX command performs a hard power down of the CM3. In order to prevent loss of data or other hard shutdown consequences, users should set an `init_delay` period and gracefully power down the CM3 from the linux userspace, i.e. with `shutdown -h now`. After the `sleep_period` has expired, the coprocessor will resume power to the CM3 allowing it to boot into normal operating mode.
 
 - `init_delay` is specified in seconds (passing 0 will immediate power down the CM3 and is not recommended!)
-- `sleep_period` is specified in milliseconds (max value of `uint64_t`)
+- `sleep_period` is composed of 8 bytes, specified in milliseconds (max value of `uint64_t`)
 
 ### Planned Features
 
