@@ -368,7 +368,6 @@ void sysexCallback(byte command, byte argc, byte *argv)
       Firmata.write(END_SYSEX);
       break;
     case POWER_DOWN:
-      Firmata.write(argc);
       if (argc > 4) {
         power_struct.sleep_delay = argv[0] * DELAY_MULTIPLIER; // in seconds
         power_struct.sleep_period = (argv[9] << 64 | argv[8] << 56 | argv[7] << 48 |argv[6] << 40 | argv[5] << 32 | argv[4] << 24 | argv[3] << 16 | argv[2] << 8 | argv[1]); // in milliseconds
