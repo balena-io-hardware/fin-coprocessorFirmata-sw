@@ -63,10 +63,10 @@ PIN_MAP port_pin[NUM_PINS] = {
 	{gpioPortD, 15, adcPosSelAPORT3YCH7, idacOutputAPORT1YCH7, MODE_NONE, TIMER_ROUTELOC0_CC0LOC_LOC23, TIMER_ROUTELOC0_CC1LOC_LOC22, TIMER_ROUTELOC0_CC2LOC_LOC21, TIMER_ROUTELOC0_CC3LOC_LOC20},   // P13
 	{gpioPortF, 7, adcPosSelAPORT2XCH23, * IDACNone, MODE_NONE, TIMER_ROUTELOC0_CC0LOC_LOC31, TIMER_ROUTELOC0_CC1LOC_LOC30, TIMER_ROUTELOC0_CC2LOC_LOC29, TIMER_ROUTELOC0_CC3LOC_LOC28},             // P14 (Dev Kit LED1)
 	{gpioPortD, 13, adcPosSelAPORT3YCH5, idacOutputAPORT1YCH5, MODE_NONE, TIMER_ROUTELOC0_CC0LOC_LOC21, TIMER_ROUTELOC0_CC1LOC_LOC20, TIMER_ROUTELOC0_CC2LOC_LOC19, TIMER_ROUTELOC0_CC3LOC_LOC18},   // P15
-	{gpioPortF, 5, * ADCNone, * IDACNone, MODE_NONE, PWM_NONE, PWM_NONE, PWM_NONE, PWM_NONE},                        					                                                                                             // P16 (PW_ON_3V3)
-	{gpioPortC, 9, * ADCNone, * IDACNone, MODE_NONE, PWM_NONE, PWM_NONE, PWM_NONE, PWM_NONE},                        					                                                                                             // P17 (PW_ON_5V)
-	{gpioPortC, 10, * ADCNone, * IDACNone, MODE_NONE, PWM_NONE, PWM_NONE, PWM_NONE, PWM_NONE},                       					                                                                                             // P18 (I2C SDA)
-	{gpioPortC, 11, * ADCNone, * IDACNone, MODE_NONE, PWM_NONE, PWM_NONE, PWM_NONE, PWM_NONE}                        					                                                                                             // P19 (I2C SCL)
+	{gpioPortF, 5, * ADCNone, * IDACNone, MODE_NONE, PWM_NONE, PWM_NONE, PWM_NONE, PWM_NONE},                        					                                                             // P16 (PW_ON_3V3)
+	{gpioPortC, 9, * ADCNone, * IDACNone, MODE_NONE, PWM_NONE, PWM_NONE, PWM_NONE, PWM_NONE},                        					                                                             // P17 (PW_ON_5V)
+	{gpioPortC, 10, * ADCNone, * IDACNone, MODE_NONE, PWM_NONE, PWM_NONE, PWM_NONE, PWM_NONE},                       					                                                             // P18 (I2C SDA)
+	{gpioPortC, 11, * ADCNone, * IDACNone, MODE_NONE, PWM_NONE, PWM_NONE, PWM_NONE, PWM_NONE}                        					                                                             // P19 (I2C SCL)
 };
 
 /******************************************************************************
@@ -412,8 +412,8 @@ void delay(unsigned int n){
 	USTIMER_Delay(n * 1000);
 };
 
-void triggerEvent(RTCDRV_TimerType_t type, uint32_t timeout, RTCDRV_Callback_t callback, void *user){
-	RTCDRV_StartTimer(id, type, timeout, callback, user);
+void triggerEvent(uint32_t timeout, RTCDRV_Callback_t callback){
+	RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, timeout, callback, NULL);
 }
 
 /******************************************************************************

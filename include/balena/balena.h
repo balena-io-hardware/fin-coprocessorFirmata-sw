@@ -17,6 +17,7 @@
 #include "ustimer.h"
 #include "tempdrv.h"
 #include "rtcdriver.h"
+#include <cstddef>
 
 #include "bsphalconfig.h"
 
@@ -47,6 +48,7 @@ extern "C" {
 #define MODE_I2C         4
 #define MODE_SPI         5
 #define MODE_ANALOG_OUT	 12
+#define SLEEP_PIN        14
 
 /* balenaFin Digital Pin Modes */
 #define GPIO_INPUT_PULLUP gpioModeInputPull
@@ -123,7 +125,7 @@ bool setPWM(unsigned int pin_no, byte duty_cycle);
 void deviceMode(unsigned int pin_no, unsigned int mode);
 
 /* RTC Functions */
-void triggerEvent(RTCDRV_TimerType_t type, uint32_t timeout, RTCDRV_Callback_t callback, void *user);
+void triggerEvent(uint32_t timeout, RTCDRV_Callback_t callback);
 
 /* I2C Functions */
 void initI2C(void);
