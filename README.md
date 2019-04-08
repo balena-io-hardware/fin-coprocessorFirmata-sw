@@ -60,9 +60,9 @@ Sysex-based sub-commands (0x00 - 0x7F) are used for an extended command set.
 
 ### Firmata Balena SYSEX Commands
 
-| type                  | sub-command | first byte       | second byte   | ...            |  support |
-| --------------------- | ----------- | ---------------  | ------------- | -------------- |  ---------|
-| power down            | 0xB0        | init_delay (uint8_t) | sleep_period[0] (uint8_t) |  sleep_period[8] (uint8_t) |  ✅          |
+| type                  | sub-command | first byte         | second byte             | ...                     | support |
+| --------------------- | ----------- | ------------------ | ----------------------- | ----------------------- | ------- |
+| power down            | 0xB0        | uint8_t init_delay | uint8_t sleep_period[0] | uint8_t sleep_period[8] |  ✅     |
 
 ##### Power Down
 
