@@ -58,6 +58,19 @@ Sysex-based sub-commands (0x00 - 0x7F) are used for an extended command set.
 | string                | 0x71        | char *string ... |               |                |          ✅          |
 | firmware name/version | 0x79        | major version    | minor version | char *name ... |          ✅          |
 
+### Firmata Balena SYSEX Commands
+
+| type                  | sub-command | first byte         | second byte             | ...                     | support |
+| --------------------- | ----------- | ------------------ | ----------------------- | ----------------------- | ------- |
+| power down            | 0xB0        | uint8_t init_delay | uint8_t sleep_period[0] | uint8_t sleep_period[3] |  ✅     |
+
+##### Power Down
+
+This SYSEX command performs a hard power down of the CM3. In order to prevent loss of data or other hard shutdown consequences, users should set an `init_delay` period and gracefully power down the CM3 from the linux userspace, i.e. with `shutdown -h now`. After the `sleep_period` has expired, the coprocessor will resume power to the CM3 allowing it to boot into normal operating mode.
+
+- `init_delay` is specified in seconds (passing 0 will immediate power down the CM3 and is not recommended!)
+- `sleep_period` is composed of 4 bytes, specified in milliseconds (max value of `uint32_t`)
+
 ### Planned Features
 
 - [ ] I2C Support
