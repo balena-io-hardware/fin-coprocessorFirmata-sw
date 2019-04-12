@@ -62,7 +62,7 @@ Sysex-based sub-commands (0x00 - 0x7F) are used for an extended command set.
 
 | type                  | sub-command | first byte         | second byte             | ...                     | support |
 | --------------------- | ----------- | ------------------ | ----------------------- | ----------------------- | ------- |
-| power down            | 0xB0        | uint8_t init_delay | uint8_t sleep_period[0] | uint8_t sleep_period[3] |  ✅     |
+| power down            | 0x0B        | uint8_t init_delay | uint8_t sleep_period[0] | uint8_t sleep_period[3] |  ✅     |
 
 ##### Power Down
 
