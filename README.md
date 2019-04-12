@@ -74,7 +74,6 @@ This SYSEX command performs a hard power down of the CM3. In order to prevent lo
 ### Planned Features
 
 - [ ] I2C Support
-- [ ] Support for RTC control of Compute Module Power Rails
 - [ ] SPI Support
 - [ ] Custom Client Library for balenaFin features
 
