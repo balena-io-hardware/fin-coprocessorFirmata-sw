@@ -71,6 +71,7 @@ bool isResetting = false;
 void setPinModeCallback(byte, int);
 void reportAnalogCallback(byte analogPin, int value);
 void sysexCallback(byte, byte, byte*);
+void powerOn(RTCDRV_TimerID_t id, void * user);
 
 /******************************************************************************
  * @brief  User Callbacks
@@ -78,22 +79,25 @@ void sysexCallback(byte, byte, byte*);
  *****************************************************************************/
 struct power
 {
-  u_int8_t sleep_delay;
+  uint32_t sleep_delay;
   uint32_t sleep_period;
   bool state;
 } power_struct;
 
 void powerOn(RTCDRV_TimerID_t id, void * user)
 {
+  // uint32_t x = power_struct.sleep_period;
   if(power_struct.state == false){
     digitalWrite(SLEEP_PIN, 0);
     power_struct.state = true;
-    triggerEvent(power_struct.sleep_period, powerOn);
+    RTCDRV_StopTimer(id); 	
+    RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_period, powerOn, NULL);
   }
   else {
     digitalWrite(SLEEP_PIN, 1);
   }
 }
+
 
 /******************************************************************************
  * @brief  Firmata Functions
@@ -369,19 +373,19 @@ void sysexCallback(byte command, byte argc, byte *argv)
       break;
     case POWER_DOWN:
       if (argc > 4) {
-        power_struct.sleep_delay = argv[0] * DELAY_MULTIPLIER; // in seconds
-        power_struct.sleep_period = (argv[9] << 64 | argv[8] << 56 | argv[7] << 48 |argv[6] << 40 | argv[5] << 32 | argv[4] << 24 | argv[3] << 16 | argv[2] << 8 | argv[1]); // in milliseconds
+        Firmata.write(START_SYSEX);
+        power_struct.sleep_delay = argv[0] * (uint32_t) DELAY_MULTIPLIER; // in seconds
+        power_struct.sleep_period = (argv[4] << 24 | argv[3] << 16 | argv[2] << 8 | argv[1]); // in milliseconds
         if(argv[0] == 0){ // without delayed start
           digitalWrite(SLEEP_PIN,0);
           power_struct.state = true;
-          triggerEvent(power_struct.sleep_period, powerOn);
+          RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_period, powerOn, NULL);
         }
         else { // with delayed start
           digitalWrite(SLEEP_PIN,1);
           power_struct.state = false;
-          triggerEvent(power_struct.sleep_delay, powerOn);
+          RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_delay, powerOn, NULL);
         }
-        Firmata.write(START_SYSEX);
         Firmata.write(POWER_DOWN);
         Firmata.write(END_SYSEX);
       }
