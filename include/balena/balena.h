@@ -70,6 +70,8 @@ extern "C" {
 
 typedef unsigned char byte;
 
+extern RTCDRV_TimerID_t id;
+
 /* Pin Struct */
 struct PIN_MAP {
 	GPIO_Port_TypeDef port;
