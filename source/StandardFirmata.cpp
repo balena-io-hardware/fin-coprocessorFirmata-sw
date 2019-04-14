@@ -86,7 +86,6 @@ struct power
 
 void powerOn(RTCDRV_TimerID_t id, void * user)
 {
-  // uint32_t x = power_struct.sleep_period;
   if(power_struct.state == false){
     digitalWrite(SLEEP_PIN, 0);
     power_struct.state = true;
