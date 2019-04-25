@@ -4,7 +4,14 @@
 
 SerialClass Serial;
 
-#define POWER_DOWN 0x0B
+/* Balena Commands */
+#define BALENA                          0x0B
+#define BALENA_FIRMWARE                 0x00
+#define BALENA_FIRMWARE_MAJOR_VERSION      0
+#define BALENA_FIRMWARE_MINOR_VERSION      0
+#define BALENA_FIRMWARE_BUGFIX_VERSION     2
+#define BALENA_SLEEP                    0x01
+
 #define DELAY_MULTIPLIER 1000 // base period (1) is milliseconds
 
 #define BUFFERSIZE          256
@@ -370,24 +377,37 @@ void sysexCallback(byte command, byte argc, byte *argv)
       }
       Firmata.write(END_SYSEX);
       break;
-    case POWER_DOWN:
-      if (argc > 4) {
-        Firmata.write(START_SYSEX);
-        power_struct.sleep_delay = argv[0] * (uint32_t) DELAY_MULTIPLIER; // in seconds
-        power_struct.sleep_period = (argv[4] << 24 | argv[3] << 16 | argv[2] << 8 | argv[1]); // in milliseconds
-        if(argv[0] == 0){ // without delayed start
-          digitalWrite(SLEEP_PIN,0);
-          power_struct.state = true;
-          RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_period, powerOn, NULL);
-        }
-        else { // with delayed start
-          digitalWrite(SLEEP_PIN,1);
-          power_struct.state = false;
-          RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_delay, powerOn, NULL);
-        }
-        Firmata.write(POWER_DOWN);
-        Firmata.write(END_SYSEX);
+    case BALENA:
+      Firmata.write(START_SYSEX);
+      Firmata.write(BALENA);
+      switch (argv[0]) {
+        case BALENA_FIRMWARE:
+          Firmata.write(BALENA_FIRMWARE);
+          Firmata.write(BALENA_FIRMWARE_MAJOR_VERSION);
+          Firmata.write(BALENA_FIRMWARE_MINOR_VERSION);
+          Firmata.write(BALENA_FIRMWARE_BUGFIX_VERSION);
+          break;
+        case BALENA_SLEEP:
+          if (argc > 5) {
+            Firmata.write(BALENA_SLEEP);
+            power_struct.sleep_delay = argv[1] * (uint32_t) DELAY_MULTIPLIER; // in seconds
+            power_struct.sleep_period = (argv[5] << 24 | argv[4] << 16 | argv[3] << 8 | argv[2]) * (uint32_t) DELAY_MULTIPLIER; // in seconds
+            if(argv[0] == 0){ // without delayed start
+              digitalWrite(SLEEP_PIN,0);
+              power_struct.state = true;
+              RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_period, powerOn, NULL);
+            }
+            else { // with delayed start
+              digitalWrite(SLEEP_PIN,1);
+              power_struct.state = false;
+              RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_delay, powerOn, NULL);
+            }
+          }
+          break;
+        default:
+          break;
       }
+      Firmata.write(END_SYSEX);
       break;
     case SERIAL_MESSAGE:
 #ifdef FIRMATA_SERIAL_FEATURE

@@ -53,27 +53,41 @@ If using a JLink programmer to externally flash:
 
 Sysex-based sub-commands (0x00 - 0x7F) are used for an extended command set.
 
-| type                  | sub-command | first byte       | second byte   | ...            | support             |
-| --------------------- | -------     | ---------------  | ------------- | -------------- | --------------------|
-| string                | 0x71        | char *string ... |               |                |          ✅          |
-| firmware name/version | 0x79        | major version    | minor version | char *name ... |          ✅          |
+| type                  | sub-command | first byte       | second byte     | ...             | support             |
+| --------------------- | -------     | ---------------  | --------------- | --------------- | --------------------|
+| string                | 0x71        | char *string ... |                 |                 |          ✅          |
+| firmware name/version | 0x79        | major version    | minor version   | char *name ...  |          ✅          |
+| balena subcommand     | 0x0B        | subcommand       | see subcommands | see subcommands |          ✅          |
+
 
 ### Firmata Balena SYSEX Commands
 
-| type                  | sub-command | first byte         | second byte             | ...                     | support |
-| --------------------- | ----------- | ------------------ | ----------------------- | ----------------------- | ------- |
-| power down            | 0x0B        | uint8_t init_delay | uint8_t sleep_period[0] | uint8_t sleep_period[3] |  ✅     |
+Balena SYSEX subcommands are structured under the Firmata SYSEX command. 
+
+For example a balena subcommand to report balena firmata firmware would be represented as follows:
+
+`[0xF0, 0x0B, 0x00, 0xF7]`
+
+Which represents:
+
+`[START_SYSEX, BALENA_SUBCOMMAND, BALENA_REPORT_FIRMWARE, END_SYSEX]`
+
+| type                   | sub-command | first byte         | second byte             | ...                     | support |
+| ---------------------- | ----------- | ------------------ | ----------------------- | ----------------------- | ------- |
+| report balena firmware | 0x00        |                    |                         |                         |  ✅     |
+| power down             | 0x01        | uint8_t init_delay | uint8_t sleep_period[0] | uint8_t sleep_period[3] |  ✅     |
 
 ##### Power Down
 
 This SYSEX command performs a hard power down of the CM3. In order to prevent loss of data or other hard shutdown consequences, users should set an `init_delay` period and gracefully power down the CM3 from the linux userspace, i.e. with `shutdown -h now`. After the `sleep_period` has expired, the coprocessor will resume power to the CM3 allowing it to boot into normal operating mode.
 
-- `init_delay` is specified in seconds (passing 0 will immediate power down the CM3 and is not recommended!)
-- `sleep_period` is composed of 4 bytes, specified in milliseconds (max value of `uint32_t`)
+- `init_delay` is composed of **1 byte**, specified in seconds (passing 0 will immediate power down the CM3 and is not recommended!)
+- `sleep_period` is composed of **4 bytes**, specified in seconds (max value of (`uint32_t` / 1000), eqv. of ~4294967 seconds)
 
 ### Planned Features
 
 - [ ] I2C Support
+- [ ] Add support for RTC prescalers 
 - [ ] SPI Support
 - [ ] Custom Client Library for balenaFin features
 
