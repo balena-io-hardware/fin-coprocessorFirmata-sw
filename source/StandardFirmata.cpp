@@ -148,7 +148,7 @@ void setPinModeCallback(byte pin, int mode)
       break;
     case INPUT:
       if (IS_PIN_DIGITAL(pin)) {
-		if(pin == 7) digitalWrite(14,0);
+		if(pin == 7)
         pinMode(PIN_TO_DIGITAL(pin), GPIO_INPUT, 0);    // disable output driver
         Firmata.setPinMode(pin, GPIO_INPUT);
       }
@@ -392,13 +392,12 @@ void sysexCallback(byte command, byte argc, byte *argv)
             Firmata.write(BALENA_SLEEP);
             power_struct.sleep_delay = argv[1] * (uint32_t) DELAY_MULTIPLIER; // in seconds
             power_struct.sleep_period = (argv[5] << 24 | argv[4] << 16 | argv[3] << 8 | argv[2]) * (uint32_t) DELAY_MULTIPLIER; // in seconds
+            Firmata.write(END_SYSEX);
             if(argv[0] == 0){ // without delayed start
-              digitalWrite(SLEEP_PIN,0);
               power_struct.state = true;
               RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_period, powerOn, NULL);
             }
             else { // with delayed start
-              digitalWrite(SLEEP_PIN,1);
               power_struct.state = false;
               RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_delay, powerOn, NULL);
             }
@@ -413,6 +412,8 @@ void sysexCallback(byte command, byte argc, byte *argv)
 #ifdef FIRMATA_SERIAL_FEATURE
       serialFeature.handleSysex(command, argc, argv);
 #endif
+      break;
+    default:
       break;
   }
 }
