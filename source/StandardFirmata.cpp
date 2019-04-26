@@ -52,7 +52,7 @@ byte portConfigInputs[TOTAL_PORTS]; // each bit: 1 = pin in INPUT, 0 = anything 
 /* timer variables */
 unsigned long currentMillis;        // store the current value from millis()
 unsigned long previousMillis = 0;       // for comparison with currentMillis
-unsigned int samplingInterval = 2000; // how often to run the main loop (in ms)
+unsigned int samplingInterval = 500; // how often to run the main loop (in ms)
 
 /* i2c data */
 struct i2c_device_info {
@@ -380,24 +380,24 @@ void sysexCallback(byte command, byte argc, byte *argv)
     case BALENA:
       Firmata.write(START_SYSEX);
       Firmata.write(BALENA);
+      Firmata.write(argv[0]);
       switch (argv[0]) {
         case BALENA_FIRMWARE:
-          Firmata.write(BALENA_FIRMWARE);
           Firmata.write(BALENA_FIRMWARE_MAJOR_VERSION);
           Firmata.write(BALENA_FIRMWARE_MINOR_VERSION);
           Firmata.write(BALENA_FIRMWARE_BUGFIX_VERSION);
           break;
         case BALENA_SLEEP:
           if (argc > 5) {
-            Firmata.write(BALENA_SLEEP);
             power_struct.sleep_delay = argv[1] * (uint32_t) DELAY_MULTIPLIER; // in seconds
             power_struct.sleep_period = (argv[5] << 24 | argv[4] << 16 | argv[3] << 8 | argv[2]) * (uint32_t) DELAY_MULTIPLIER; // in seconds
-            Firmata.write(END_SYSEX);
-            if(argv[0] == 0){ // without delayed start
+            if(argv[1] == 0){ // without delayed start
+              digitalWrite(SLEEP_PIN, 0);
               power_struct.state = true;
               RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_period, powerOn, NULL);
             }
             else { // with delayed start
+              digitalWrite(SLEEP_PIN, 1);
               power_struct.state = false;
               RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_delay, powerOn, NULL);
             }
