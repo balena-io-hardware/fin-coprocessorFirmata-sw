@@ -390,7 +390,10 @@ void sysexCallback(byte command, byte argc, byte *argv)
         case BALENA_SLEEP:
           if (argc > 5) {
             power_struct.sleep_delay = argv[1] * (uint32_t) DELAY_MULTIPLIER; // in seconds
-            power_struct.sleep_period = (argv[5] << 21 | argv[4] << 14 | argv[3] << 7 | argv[2]) * (uint32_t) DELAY_MULTIPLIER; // in seconds
+            power_struct.sleep_period = (((argv[5] << 21) & 0x01) | \
+                                        (argv[4] << 14) | \
+                                        (argv[3] << 7) | \
+                                        (argv[2])) * (uint32_t) DELAY_MULTIPLIER; // in seconds
             if(argv[1] == 0){ // without delayed start
               digitalWrite(SLEEP_PIN, 0);
               power_struct.state = true;
