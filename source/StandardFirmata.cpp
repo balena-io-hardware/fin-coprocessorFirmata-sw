@@ -323,7 +323,7 @@ void sysexCallback(byte command, byte argc, byte *argv)
       Firmata.write(START_SYSEX);
       Firmata.write(CAPABILITY_RESPONSE);
       for (byte pin = 0; pin < TOTAL_PINS; pin++) {
-        if (IS_PIN_DIGITAL(pin)) {
+        if (port_pin[pin].pin < TOTAL_PINS) {
           Firmata.write((byte)INPUT);
           Firmata.write(1);
           Firmata.write((byte)PIN_MODE_PULLUP);
@@ -331,22 +331,22 @@ void sysexCallback(byte command, byte argc, byte *argv)
           Firmata.write((byte)OUTPUT);
           Firmata.write(1);
         }
-        if (IS_PIN_ANALOG(pin)) {
+        if (port_pin[pin].adc != MODE_NONE) {
           Firmata.write(PIN_MODE_ANALOG);
           Firmata.write(10); // 10 = 10-bit resolution
         }
-        if (IS_PIN_PWM(pin)) {
+        if (port_pin[pin].pwm_0 != PWM_NONE) {
           Firmata.write(PIN_MODE_PWM);
           Firmata.write(DEFAULT_PWM_RESOLUTION);
         }
-        if (IS_PIN_DIGITAL(pin)) {
+        if (port_pin[pin].pin < TOTAL_PINS) {
           Firmata.write(PIN_MODE_SERVO);
           Firmata.write(14);
         }
-        if (IS_PIN_I2C(pin)) {
-          Firmata.write(PIN_MODE_I2C);
-          Firmata.write(1);
-        }
+        // if (IS_PIN_I2C(pin)) {
+        //   Firmata.write(PIN_MODE_I2C);
+        //   Firmata.write(1);
+        // }
 #ifdef FIRMATA_SERIAL_FEATURE
         serialFeature.handleCapability(pin);
 #endif
