@@ -4,6 +4,16 @@
 
 SerialClass Serial;
 
+/* Balena Commands */
+#define BALENA                          0x0B
+#define BALENA_FIRMWARE                 0x00
+#define BALENA_FIRMWARE_MAJOR_VERSION      0
+#define BALENA_FIRMWARE_MINOR_VERSION      0
+#define BALENA_FIRMWARE_BUGFIX_VERSION     2
+#define BALENA_SLEEP                    0x01
+
+#define DELAY_MULTIPLIER 1000 // base period (1) is milliseconds
+
 #define BUFFERSIZE          256
 #define I2C_WRITE                   B00000000
 #define I2C_READ                    B00001000
@@ -19,6 +29,7 @@ SerialClass Serial;
 
 // the minimum interval for sampling analog input
 #define MINIMUM_SAMPLING_INTERVAL 1
+
 
 /******************************************************************************
  * @brief  Global Variables
@@ -41,7 +52,7 @@ byte portConfigInputs[TOTAL_PORTS]; // each bit: 1 = pin in INPUT, 0 = anything 
 /* timer variables */
 unsigned long currentMillis;        // store the current value from millis()
 unsigned long previousMillis = 0;       // for comparison with currentMillis
-unsigned int samplingInterval = 2000; // how often to run the main loop (in ms)
+unsigned int samplingInterval = 500; // how often to run the main loop (in ms)
 
 /* i2c data */
 struct i2c_device_info {
@@ -67,6 +78,32 @@ bool isResetting = false;
 void setPinModeCallback(byte, int);
 void reportAnalogCallback(byte analogPin, int value);
 void sysexCallback(byte, byte, byte*);
+void powerOn(RTCDRV_TimerID_t id, void * user);
+
+/******************************************************************************
+ * @brief  User Callbacks
+ *
+ *****************************************************************************/
+struct power
+{
+  uint32_t sleep_delay;
+  uint32_t sleep_period;
+  bool state;
+} power_struct;
+
+void powerOn(RTCDRV_TimerID_t id, void * user)
+{
+  if(power_struct.state == false){
+    digitalWrite(SLEEP_PIN, 0);
+    power_struct.state = true;
+    RTCDRV_StopTimer(id);
+    RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_period, powerOn, NULL);
+  }
+  else {
+    digitalWrite(SLEEP_PIN, 1);
+  }
+}
+
 
 /******************************************************************************
  * @brief  Firmata Functions
@@ -111,7 +148,7 @@ void setPinModeCallback(byte pin, int mode)
       break;
     case INPUT:
       if (IS_PIN_DIGITAL(pin)) {
-		if(pin == 7) digitalWrite(14,0);
+		if(pin == 7)
         pinMode(PIN_TO_DIGITAL(pin), GPIO_INPUT, 0);    // disable output driver
         Firmata.setPinMode(pin, GPIO_INPUT);
       }
@@ -286,7 +323,7 @@ void sysexCallback(byte command, byte argc, byte *argv)
       Firmata.write(START_SYSEX);
       Firmata.write(CAPABILITY_RESPONSE);
       for (byte pin = 0; pin < TOTAL_PINS; pin++) {
-        if (IS_PIN_DIGITAL(pin)) {
+        if (port_pin[pin].pin < TOTAL_PINS) {
           Firmata.write((byte)INPUT);
           Firmata.write(1);
           Firmata.write((byte)PIN_MODE_PULLUP);
@@ -294,22 +331,22 @@ void sysexCallback(byte command, byte argc, byte *argv)
           Firmata.write((byte)OUTPUT);
           Firmata.write(1);
         }
-        if (IS_PIN_ANALOG(pin)) {
+        if (port_pin[pin].adc != MODE_NONE) {
           Firmata.write(PIN_MODE_ANALOG);
           Firmata.write(10); // 10 = 10-bit resolution
         }
-        if (IS_PIN_PWM(pin)) {
+        if (port_pin[pin].pwm_0 != PWM_NONE) {
           Firmata.write(PIN_MODE_PWM);
           Firmata.write(DEFAULT_PWM_RESOLUTION);
         }
-        if (IS_PIN_DIGITAL(pin)) {
+        if (port_pin[pin].pin < TOTAL_PINS) {
           Firmata.write(PIN_MODE_SERVO);
           Firmata.write(14);
         }
-        if (IS_PIN_I2C(pin)) {
-          Firmata.write(PIN_MODE_I2C);
-          Firmata.write(1);
-        }
+        // if (IS_PIN_I2C(pin)) {
+        //   Firmata.write(PIN_MODE_I2C);
+        //   Firmata.write(1);
+        // }
 #ifdef FIRMATA_SERIAL_FEATURE
         serialFeature.handleCapability(pin);
 #endif
@@ -340,11 +377,46 @@ void sysexCallback(byte command, byte argc, byte *argv)
       }
       Firmata.write(END_SYSEX);
       break;
-
+    case BALENA:
+      Firmata.write(START_SYSEX);
+      Firmata.write(BALENA);
+      Firmata.write(argv[0]);
+      switch (argv[0]) {
+        case BALENA_FIRMWARE:
+          Firmata.write(BALENA_FIRMWARE_MAJOR_VERSION);
+          Firmata.write(BALENA_FIRMWARE_MINOR_VERSION);
+          Firmata.write(BALENA_FIRMWARE_BUGFIX_VERSION);
+          break;
+        case BALENA_SLEEP:
+          if (argc > 5) {
+            power_struct.sleep_delay = argv[1] * (uint32_t) DELAY_MULTIPLIER; // in seconds
+            power_struct.sleep_period = (((argv[5] << 21) & 0x01) | \
+                                        (argv[4] << 14) | \
+                                        (argv[3] << 7) | \
+                                        (argv[2])) * (uint32_t) DELAY_MULTIPLIER; // in seconds
+            if(argv[1] == 0){ // without delayed start
+              digitalWrite(SLEEP_PIN, 0);
+              power_struct.state = true;
+              RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_period, powerOn, NULL);
+            }
+            else { // with delayed start
+              digitalWrite(SLEEP_PIN, 1);
+              power_struct.state = false;
+              RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_delay, powerOn, NULL);
+            }
+          }
+          break;
+        default:
+          break;
+      }
+      Firmata.write(END_SYSEX);
+      break;
     case SERIAL_MESSAGE:
 #ifdef FIRMATA_SERIAL_FEATURE
       serialFeature.handleSysex(command, argc, argv);
 #endif
+      break;
+    default:
       break;
   }
 }
@@ -483,6 +555,3 @@ int main(void)
 		  }
 	}
 }
-
-
-

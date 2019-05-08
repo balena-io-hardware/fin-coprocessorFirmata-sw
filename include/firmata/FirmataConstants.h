@@ -92,6 +92,9 @@ static const int PIN_MODE_IGNORE =         0x7F; // pin configured to be ignored
 
 static const int TOTAL_PIN_MODES =         13;
 
+// balena commands
+static const int START_BALENA =            0xB0; // start a balena Sysex message
+
 } // namespace firmata
 
 #endif // FirmataConstants_h
