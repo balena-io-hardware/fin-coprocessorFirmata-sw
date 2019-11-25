@@ -1,0 +1,3 @@
+[submodule "balena-sdk"]
+	path = balena-sdk
+	url = git@github.com:balena-io-playground/balena-fin-coprocessor-base.git
