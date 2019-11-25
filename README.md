@@ -86,6 +86,7 @@ This SYSEX command performs a hard power down of the CM3. In order to prevent lo
 ### Planned Features
 
 - [ ] I2C Support
+- [ ] Access Sleep.h for various deep sleep modes
 - [ ] Add support for RTC prescalers
 - [ ] SPI Support
 - [ ] Custom Client Library for balenaFin features
