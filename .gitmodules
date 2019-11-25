@@ -1,3 +1,0 @@
-[submodule "balena-sdk"]
-	path = balena-sdk
-	url = git@github.com:Bucknalla/efm32-base.git
