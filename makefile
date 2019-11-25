@@ -7,7 +7,7 @@
 .PHONY: setup bgm13 bgm1b
 
 setup:
-	mkdir -p builds
+	git submodule update --init; mkdir -p builds;
 
 # BGM13
 bgm13:
