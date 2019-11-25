@@ -502,6 +502,7 @@ void checkDigitalInputs(void)
  *****************************************************************************/
 int main(void)
 {
+
 	Firmata.setFirmwareVersion(FIRMATA_FIRMWARE_MAJOR_VERSION, FIRMATA_FIRMWARE_MINOR_VERSION);
 	Firmata.attach(ANALOG_MESSAGE, analogWriteCallback);
 	Firmata.attach(DIGITAL_MESSAGE, digitalWriteCallback);
