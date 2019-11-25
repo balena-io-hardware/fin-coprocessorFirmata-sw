@@ -1,0 +1,3 @@
+[submodule "efm32-base"]
+	path = efm32-base
+	url = git@github.com:Bucknalla/efm32-base.git
