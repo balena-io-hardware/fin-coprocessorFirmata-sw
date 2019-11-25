@@ -28,12 +28,12 @@ If using a JLink programmer to externally flash:
 
 With the dependencies installed, run:
 
-1. `make setup` to generate the build directory
-2. `make balena` to execute the build
+1. `make setup` to init balena-sdk and generate build directory
+2. `make bgm1b` to execute the balenaFin build
 
 If using a JLink programmer to externally flash:
 
-3. `make flash` to flash to a device
+3. `cd builds/bgm1b && make flash` to flash to a device
 
 ### Firmata Protocol v2.5.8
 
