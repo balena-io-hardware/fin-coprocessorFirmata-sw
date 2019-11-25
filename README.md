@@ -2,25 +2,25 @@
 
 This is an implementation of the [Firmata](https://github.com/firmata/protocol) protocol for SiliconLabs BGM111. It is compatible with standard Firmata 2.5.8. Please be aware this **project is in beta release** and is subject to change frequently up until release.
 
-### Installation
+## Installation
 
 ### Dockerfile
 
 The easiest way to install the Firmata application onto your board is to run the [balena application](https://github.com/balena-io-playground/balena-fin-firmata-flash) provided. This targets the latest verision of the Balena Firmata application. This balena application will run and install [OpenOCD](http://openocd.org/) on your Fin in order to provision the Coprocessor with both a bootloader and the Firmata application.
 
-### Build & Manually Flash
+### Standalone
 
-It is also possible to build the source and manually flash the Coprocessor however, in order to flash the Coprocessor you will need to either load the compiled firmware onto the Compute Module and flash it using OpenOCD or program the Coprocessor using an external programmer such as a [Segger JLink ](https://www.segger.com/products/debug-probes/j-link/).
+It is also possible to build the source and manually flash the Coprocessor however, in order to flash the Coprocessor you will need to either load the compiled firmware onto the Compute Module and flash it using OpenOCD or program the Coprocessor using an external programmer such as a [Segger JLink](https://www.segger.com/products/debug-probes/j-link/).
 
 #### Dependencies
 
- - cmake
- - make
- - arm-none-eabi-gcc*
+- cmake
+- make
+- arm-none-eabi-gcc*
 
 If using a JLink programmer to externally flash:
 
- - [JLink tools](https://www.segger.com/jlink-software.html)
+- [JLink tools](https://www.segger.com/jlink-software.html)
 
 *Make sure this is in your `$PATH`
 
@@ -59,7 +59,6 @@ Sysex-based sub-commands (0x00 - 0x7F) are used for an extended command set.
 | firmware name/version | 0x79        | major version    | minor version   | char *name ...  |          ✅          |
 | balena subcommand     | 0x0B        | subcommand       | see subcommands | see subcommands |          ✅          |
 
-
 ### Firmata Balena SYSEX Commands
 
 Balena SYSEX subcommands are structured under the Firmata SYSEX command. 
@@ -77,7 +76,7 @@ Which represents:
 | report balena firmware | 0x00        |                    |                         |                         |  ✅     |
 | power down             | 0x01        | uint8_t init_delay | uint8_t sleep_period[0] | uint8_t sleep_period[3] |  ✅     |
 
-##### Power Down
+#### Power Down
 
 This SYSEX command performs a hard power down of the CM3. In order to prevent loss of data or other hard shutdown consequences, users should set an `init_delay` period and gracefully power down the CM3 from the linux userspace, i.e. with `shutdown -h now`. After the `sleep_period` has expired, the coprocessor will resume power to the CM3 allowing it to boot into normal operating mode.
 
@@ -87,7 +86,6 @@ This SYSEX command performs a hard power down of the CM3. In order to prevent lo
 ### Planned Features
 
 - [ ] I2C Support
-- [ ] Add support for RTC prescalers 
+- [ ] Add support for RTC prescalers
 - [ ] SPI Support
 - [ ] Custom Client Library for balenaFin features
-
