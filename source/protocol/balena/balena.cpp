@@ -39,6 +39,8 @@ volatile bool i2c_rxInProgress;
 volatile bool i2c_startTx;
 uint8_t i2c_rxBuffer[I2C_RXBUFFER_SIZE];
 uint8_t i2c_rxBufferIndex;
+// uint8_t cmd_array[CMD_ARRAY_SIZE];
+// uint8_t data_array[DATA_ARRAY_SIZE];
 
 /******************************************************************************
  * @brief  Pin Definitions
@@ -445,6 +447,32 @@ void initI2C(void)
 	i2c_rxInProgress = false;
 	i2c_startTx = false;
 	i2c_rxBufferIndex = 0;
+}
+
+void transferI2C(uint16_t device_addr, uint8_t cmd_array[], uint8_t data_array[], uint16_t cmd_len, uint16_t data_len, uint8_t flag)
+{
+      // Transfer structure
+      I2C_TransferSeq_TypeDef i2cTransfer;
+ 
+      // Initialize I2C transfer
+      I2C_TransferReturn_TypeDef result;
+      i2cTransfer.addr          = device_addr;
+      i2cTransfer.flags         = flag;
+      i2cTransfer.buf[0].data   = cmd_array;
+      i2cTransfer.buf[0].len    = cmd_len;
+ 
+      // Note that WRITE_WRITE this is tx2 data
+      i2cTransfer.buf[1].data   = data_array;
+      i2cTransfer.buf[1].len    = data_len;
+ 
+      // Set up the transfer       
+      result = I2C_TransferInit(I2C0, &i2cTransfer);
+ 
+      // Do it until the transfer is done
+      while (result != i2cTransferDone)
+      {
+            result = I2C_Transfer(I2C0);
+      }
 }
 
 // TODO

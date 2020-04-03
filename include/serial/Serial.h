@@ -35,9 +35,9 @@ extern "C" {
 #define EXT_PIN_RX gpioPortA,3
 #define EXT_PIN_TX gpioPortA,2
 
-#define LOC CM3_LOC
-#define RX CM3_PIN_RX
-#define TX CM3_PIN_TX
+#define LOC DEV_LOC
+#define RX DEV_PIN_RX
+#define TX DEV_PIN_TX
 
 #define EMDRV_UARTDRV_MAX_CONCURRENT_BUFS 12
 #define BUFFERSIZE 256
