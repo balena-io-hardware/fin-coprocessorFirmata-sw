@@ -17,6 +17,7 @@ IDAC_OutMode_TypeDef * IDACNone;
 
 /* RTC */
 RTCDRV_TimerID_t id;
+RTCDRV_TimerID_t wall;
 
 /* PWM */
 TIMER_InitCC_TypeDef timerCCInit = TIMER_INITCC_DEFAULT;
@@ -403,11 +404,13 @@ uint32_t analogRead(unsigned int pin_no){
 void initTimer(){
 	USTIMER_Init();
 	RTCDRV_Init();
-	RTCDRV_AllocateTimer( &id );
+	RTCDRV_AllocateTimer(&id);
 };
 
 uint32_t millis(){
-	return(RTCDRV_GetWallClockTicks32()/4);
+	uint64_t ticks = RTCDRV_GetWallClockTicks64();
+	uint32_t milliseconds = RTCDRV_TicksToMsec(ticks);
+	return(milliseconds);
 };
 
 void delay(unsigned int n){
@@ -451,6 +454,7 @@ void initI2C(void)
 
 void transferI2C(uint16_t device_addr, uint8_t cmd_array[], uint8_t data_array[], uint16_t cmd_len, uint16_t data_len, uint8_t flag)
 {
+	// uint16_t pre_time = 0,cur_time = 0,timeout = 10000;
       // Transfer structure
       I2C_TransferSeq_TypeDef i2cTransfer;
  
@@ -462,9 +466,9 @@ void transferI2C(uint16_t device_addr, uint8_t cmd_array[], uint8_t data_array[]
       i2cTransfer.buf[0].len    = cmd_len;
  
       // Note that WRITE_WRITE this is tx2 data
-      i2cTransfer.buf[1].data   = data_array;
-      i2cTransfer.buf[1].len    = data_len;
- 
+		i2cTransfer.buf[1].data   = data_array;
+		i2cTransfer.buf[1].len    = data_len;
+
       // Set up the transfer       
       result = I2C_TransferInit(I2C0, &i2cTransfer);
  

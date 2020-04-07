@@ -65,9 +65,9 @@ struct i2c_device_info {
 /* for i2c read continuous more */
 i2c_device_info query[I2C_MAX_QUERIES];
 
-// byte i2cRxData[64];
-uint8_t i2cTxData[I2C_TXBUFFER_SIZE];
-uint8_t i2cRxData[I2C_RXBUFFER_SIZE];
+// byte i2cDATA[64];
+uint8_t i2cCMD[I2C_TXBUFFER_SIZE];
+uint8_t i2cDATA[I2C_RXBUFFER_SIZE];
 bool isI2CEnabled = false;
 signed char queryIndex = -1;
 // default delay time between i2c read request and Wire.requestFrom()
@@ -140,39 +140,31 @@ void readAndReportData(byte address, int theRegister, byte numBytes, byte stopTX
   // allow I2C requests that don't require a register read
   // for example, some devices using an interrupt pin to signify new data available
   // do not always require the register read so upon interrupt you call Wire.requestFrom()
-  i2cTxData[0] = theRegister;
+
+  i2cCMD[0] = theRegister;
   if (theRegister != I2C_REGISTER_NOT_SPECIFIED) {
-    transferI2C((u_int16_t) address, i2cTxData, NULL, 1, NULL, I2C_FLAG_WRITE);
-    // Wire.beginTransmission(address);
-    // wireWrite((byte)theRegister);
-    // Wire.endTransmission(stopTX); // default = true
-    // do not set a value of 0
+    
+    transferI2C((u_int16_t) address, i2cCMD, i2cDATA, 1, numBytes, I2C_FLAG_WRITE_READ);
+
     if (i2cReadDelayTime > 0) {
       // delay is necessary for some devices such as WiiNunchuck
       delay(i2cReadDelayTime);
     }
   } else {
-    i2cTxData[0] = 0;  // fill the register with a dummy value
+    i2cCMD[0] = 0;  // fill the register with a dummy value
   }
 
-  // Wire.requestFrom(address, numBytes);  // all bytes are returned in requestFrom
-  transferI2C((u_int16_t) address, i2cTxData, i2cRxData, 1, numBytes, I2C_FLAG_WRITE_READ);
+  transferI2C((u_int16_t) address, i2cCMD, i2cDATA, 1, numBytes, I2C_FLAG_WRITE_READ);
 
-  // check to be sure correct number of bytes were returned by slave
-  // if (numBytes < Wire.available()) {
-  //   Firmata.sendString("I2C: Too many bytes received");
-  // } else if (numBytes > Wire.available()) {
-  //   Firmata.sendString("I2C: Too few bytes received");
-  // }
-  uint8_t payload[numBytes+2];
-  payload[0] = address;
+  uint8_t payload[numBytes];
+
+  payload[0] = address >> 1;
   payload[1] = theRegister;
 
   for (int i = 0; i < numBytes; i++) {
-    payload[2 + i] = i2cRxData[i];
+    payload[2 + i] = i2cDATA[i];
   }
 
-  // send slave address, register and received bytes
   Firmata.sendSysex(SYSEX_I2C_REPLY, numBytes + 2, payload);
 }
 
@@ -373,7 +365,7 @@ void sysexCallback(byte command, byte argc, byte *argv)
         return;
       }
       else {
-        slaveAddress = argv[0];
+        slaveAddress = argv[0] << 1;
       }
 
       // need to invert the logic here since 0 will be default for client
@@ -387,10 +379,11 @@ void sysexCallback(byte command, byte argc, byte *argv)
 
       switch (mode) {
         case I2C_WRITE:
-          for (byte i = 2; i < argc; i += 2) {
-            i2cRxData[i-2] = argv[i] + (argv[i + 1] << 7);
+          for (byte i = 4; i < argc; i += 2) {
+            i2cDATA[(i-4)] = argv[i] + (argv[i + 1] << 7);
           }
-          transferI2C((u_int16_t) slaveAddress, i2cTxData, i2cRxData, 1, (argc-2), I2C_FLAG_WRITE);
+          i2cCMD[0] = argv[2] + (argv[3] << 7);
+          transferI2C((u_int16_t) slaveAddress, i2cCMD , i2cDATA,  1, (argc-5), I2C_FLAG_WRITE_WRITE);
           delay(10);
           break;
         case I2C_READ:
@@ -415,17 +408,17 @@ void sysexCallback(byte command, byte argc, byte *argv)
           if (argc == 6) {
             // a slave register is specified
             slaveRegister = argv[2] + (argv[3] << 7);
-            i2cRxData[0] = argv[4] + (argv[5] << 7);  // bytes to read
+            i2cDATA[0] = argv[4] + (argv[5] << 7);  // bytes to read
           }
           else {
             // a slave register is NOT specified
             slaveRegister = (int)I2C_REGISTER_NOT_SPECIFIED;
-            i2cRxData[0] = argv[2] + (argv[3] << 7);  // bytes to read
+            i2cDATA[0] = argv[2] + (argv[3] << 7);  // bytes to read
           }
           queryIndex++;
           query[queryIndex].addr = slaveAddress;
           query[queryIndex].reg = slaveRegister;
-          query[queryIndex].bytes = i2cRxData[0];
+          query[queryIndex].bytes = i2cDATA[0];
           query[queryIndex].stopTX = stopTX;
           break;
         case I2C_STOP_READING:
@@ -696,23 +689,12 @@ int main(void)
 
 
 
-	while(1){
+	while(true){
 		 byte pin, analogPin;
 
 		  /* DIGITALREAD - as fast as possible, check for changes and output them to the
 		   * UART buffer using Serial.write()  */
 		  checkDigitalInputs();
-
-                digitalWrite(12,0);
-
-
-      // while(true){
-      //   delay(500);
-      //   digitalWrite(14,0);
-      //   delay(500);
-      //   digitalWrite(14,1);        
-
-      // }
 
 		  /* STREAMREAD - processing incoming messages as soon as possible, while still
 		   * checking digital inputs.  */
@@ -724,7 +706,7 @@ int main(void)
 		  currentMillis = millis();
 		  if (currentMillis - previousMillis > samplingInterval) {
 		    previousMillis += samplingInterval;
-		    /* ANALOGREAD - do all analogReads() at the configured sampling interval */
+		  /* ANALOGREAD - do all analogReads() at the configured sampling interval */
 		    for (pin = 0; pin < TOTAL_PINS; pin++) {
 		      if (IS_PIN_ANALOG(pin) && Firmata.getPinMode(pin) == PIN_MODE_ANALOG) {
 		        analogPin = PIN_TO_ANALOG(pin);
@@ -736,11 +718,11 @@ int main(void)
 		      }
 		    }
 		    // report i2c data for all device with read continuous mode enabled
-		    // if (queryIndex > -1) {
-		    //   for (byte i = 0; i < queryIndex + 1; i++) {
-		    //     readAndReportData(query[i].addr, query[i].reg, query[i].bytes, query[i].stopTX);
-		    //   }
-		    // }
+		    if (queryIndex > -1) {
+		      for (byte i = 0; i < queryIndex + 1; i++) {
+		        readAndReportData(query[i].addr, query[i].reg, query[i].bytes, query[i].stopTX);
+		      }
+		    }
 		  }
 	}
 }
