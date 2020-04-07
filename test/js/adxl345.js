@@ -1,4 +1,5 @@
 let firmata = require('firmata');
+const port = "/dev/ttyUSB1";
 
 const adxl345 = 0x53;
 const sensitivity = 0.00390625;
@@ -8,7 +9,7 @@ const register = {
     READ: 0xB2,
   };
  
-let board = new firmata.Board("/dev/ttyUSB1", {skipCapabilities: true},function(err) {
+let board = new firmata.Board(port, {skipCapabilities: true},function(err) {
     if (err) {
         console.log(err);
         board.reset();

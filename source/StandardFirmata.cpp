@@ -8,8 +8,8 @@ SerialClass Serial;
 #define BALENA                          0x0B
 #define BALENA_FIRMWARE                 0x00
 #define BALENA_FIRMWARE_MAJOR_VERSION      0
-#define BALENA_FIRMWARE_MINOR_VERSION      0
-#define BALENA_FIRMWARE_BUGFIX_VERSION     2
+#define BALENA_FIRMWARE_MINOR_VERSION      1
+#define BALENA_FIRMWARE_BUGFIX_VERSION     0
 #define BALENA_SLEEP                    0x01
 
 #define DELAY_MULTIPLIER 1000 // base period (1) is milliseconds
@@ -143,7 +143,7 @@ void readAndReportData(byte address, int theRegister, byte numBytes, byte stopTX
 
   i2cCMD[0] = theRegister;
   if (theRegister != I2C_REGISTER_NOT_SPECIFIED) {
-    
+
     transferI2C((u_int16_t) address, i2cCMD, i2cDATA, 1, numBytes, I2C_FLAG_WRITE_READ);
 
     if (i2cReadDelayTime > 0) {

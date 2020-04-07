@@ -23,9 +23,9 @@ extern "C" {
   #include <stdint.h>
 #endif
 
-#define CM3_LOC USART_ROUTELOC0_RXLOC_LOC25|USART_ROUTELOC0_TXLOC_LOC27
-#define CM3_PIN_RX gpioPortF,2
-#define CM3_PIN_TX gpioPortF,3
+#define FIN_LOC USART_ROUTELOC0_RXLOC_LOC25|USART_ROUTELOC0_TXLOC_LOC27
+#define FIN_PIN_RX gpioPortF,2
+#define FIN_PIN_TX gpioPortF,3
 
 #define DEV_LOC USART_ROUTELOC0_RXLOC_LOC0|USART_ROUTELOC0_TXLOC_LOC0
 #define DEV_PIN_RX gpioPortA,1
@@ -35,9 +35,9 @@ extern "C" {
 #define EXT_PIN_RX gpioPortA,3
 #define EXT_PIN_TX gpioPortA,2
 
-#define LOC DEV_LOC
-#define RX DEV_PIN_RX
-#define TX DEV_PIN_TX
+// #define LOC DEV_LOC
+// #define RX DEV_PIN_RX
+// #define TX DEV_PIN_TX
 
 #define EMDRV_UARTDRV_MAX_CONCURRENT_BUFS 12
 #define BUFFERSIZE 256
