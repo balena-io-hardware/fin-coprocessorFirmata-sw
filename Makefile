@@ -3,16 +3,19 @@
 # Copyright (c) 2016 Ryan Kurte
 # This file is covered under the MIT license available at: https://opensource.org/licenses/MIT
 
-.PHONY: setup balena efm32g efm32bg efm32gg efm32zg efm32wg efm32lg efm32tg efm32hg ezr32lg ezr32wg efm32pg efr32fg
+.PHONY: setup balena devkit efm32g efm32bg efm32gg efm32zg efm32wg efm32lg efm32tg efm32hg ezr32lg ezr32wg efm32pg efr32fg
 
-test: setup balena efm32g efm32bg efm32gg efm32zg efm32wg efm32lg efm32tg efm32hg ezr32lg ezr32wg efm32pg efr32fg 
+test: setup balena devkit efm32g efm32bg efm32gg efm32zg efm32wg efm32lg efm32tg efm32hg ezr32lg ezr32wg efm32pg efr32fg 
 
 setup:
 	mkdir -p builds
 
 #BalenaFin
 balena:
-	cd builds; rm -rf $@; mkdir $@; cd $@; cmake -DDEVICE=EFR32BG1B232F256GM48 ../..; make
+	cd builds; rm -rf $@; mkdir $@; cd $@; cmake -DDEVICE=EFR32BG1B232F256GM48 -DSERIAL=FIN ../..; make
+
+devkit:
+	cd builds; rm -rf $@; mkdir $@; cd $@; cmake -DDEVICE=EFR32BG1B232F256GM48 -DSERIAL=DEV ../..; make
 
 #EFM32G Family
 efm32g:
@@ -58,11 +61,9 @@ ezr32wg:
 efm32pg:
 	cd builds; rm -rf $@; mkdir $@; cd $@; cmake -DDEVICE=EFM32PG1B200F256GM48 ../..; make;
 
-
 #EFR32FG Family
 efr32fg:
 	cd builds; rm -rf $@; mkdir $@; cd $@; cmake -DDEVICE=EFR32FG13P231F512GM48 ../..; make;
-
 
 #EFR32MG Family
 efr32mg:
