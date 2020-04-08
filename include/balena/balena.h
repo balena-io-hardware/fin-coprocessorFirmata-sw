@@ -134,9 +134,9 @@ void deviceMode(unsigned int pin_no, unsigned int mode);
 void triggerEvent(uint32_t timeout, RTCDRV_Callback_t callback);
 
 /* I2C Functions */
-void initI2C(void);
+void initI2C(byte mode);
+void deinitI2C();
 void transferI2C(uint16_t device_addr, uint8_t cmd_array[], uint8_t data_array[], uint16_t cmd_len, uint16_t data_len, uint8_t flag);
-// TODO
 
 /* SPI Functions */
 // TODO

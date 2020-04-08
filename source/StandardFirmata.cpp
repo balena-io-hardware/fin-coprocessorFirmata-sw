@@ -353,6 +353,7 @@ void sysexCallback(byte command, byte argc, byte *argv)
   byte stopTX;
   byte slaveAddress;
   byte data;
+  byte i2c_mode;
   int slaveRegister;
   unsigned int delayTime;
 
@@ -459,6 +460,12 @@ void sysexCallback(byte command, byte argc, byte *argv)
 
       if (argc > 1 && delayTime > 0) {
         i2cReadDelayTime = delayTime;
+      }
+
+      if(argc > 2){
+        i2c_mode = (argv[2] + (argv[3] << 7));
+        deinitI2C();
+        initI2C(i2c_mode);
       }
 
       if (!isI2CEnabled) {

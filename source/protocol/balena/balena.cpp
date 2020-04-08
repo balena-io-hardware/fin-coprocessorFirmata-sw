@@ -84,7 +84,7 @@ void balenaInit()
 	initTimer();
 	initADC();
 	initPWM();
-	initI2C();
+	initI2C(0);
 };
 
 void reset(){
@@ -427,7 +427,7 @@ void triggerEvent(uint32_t timeout, RTCDRV_Callback_t callback){
  *
  *****************************************************************************/
 
-void initI2C(void)
+void initI2C(byte mode)
 {
 	CMU_ClockEnable(cmuClock_I2C0, true);
 
@@ -438,10 +438,17 @@ void initI2C(void)
 	GPIO_PinModeSet(gpioPortC, 10, gpioModeWiredAndPullUpFilter, 1);
 	GPIO_PinModeSet(gpioPortC, 11, gpioModeWiredAndPullUpFilter, 1);
 
-	// Enable pins at location 15 as specified in datasheet
 	I2C0->ROUTEPEN = I2C_ROUTEPEN_SDAPEN | I2C_ROUTEPEN_SCLPEN;
-	I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SDALOC_MASK)) | I2C_ROUTELOC0_SDALOC_LOC15;
-	I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SCLLOC_MASK)) | I2C_ROUTELOC0_SCLLOC_LOC15;
+	if(mode == 0){
+		// Internal I2C interface (SCL_PC11 & SDA_PC10)
+		I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SDALOC_MASK)) | I2C_ROUTELOC0_SDALOC_LOC15;
+		I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SCLLOC_MASK)) | I2C_ROUTELOC0_SCLLOC_LOC15;
+	}
+	else {
+		// External I2C interface (SCL_PF6 & SDA_PB11)
+		I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SDALOC_MASK)) | I2C_ROUTELOC0_SDALOC_LOC6;
+		I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SCLLOC_MASK)) | I2C_ROUTELOC0_SCLLOC_LOC10;
+	}
 
 	// Initializing the I2C
 	I2C_Init(I2C0, &i2cInit);
@@ -450,6 +457,11 @@ void initI2C(void)
 	i2c_rxInProgress = false;
 	i2c_startTx = false;
 	i2c_rxBufferIndex = 0;
+}
+
+void deinitI2C()
+{
+	I2C_Reset(I2C0);
 }
 
 void transferI2C(uint16_t device_addr, uint8_t cmd_array[], uint8_t data_array[], uint16_t cmd_len, uint16_t data_len, uint8_t flag)
