@@ -84,10 +84,35 @@ This SYSEX command performs a hard power down of the CM3. In order to prevent lo
 - `init_delay` is composed of **1 byte**, specified in seconds (passing 0 will immediate power down the CM3 and is not recommended!)
 - `sleep_period` is composed of **4 bytes**, specified in seconds (max value of (`uint32_t` / 1000), eqv. of ~4294967 seconds)
 
-### Planned Features
+### Firmata Pin Map
 
-- [ ] I2C Support
-- [ ] Add support for RTC prescalers 
+| Pin | Port | Function  | Note                 |
+|-----|------|-----------|----------------------|
+| 0   | PD14 |           |                      |
+| 1   | PB13 | SPI_CS    |                      |
+| 2   | PA2  |           |                      |
+| 3   | PC8  | SPI_CLK   |                      |
+| 4   | PA3  |           |                      |
+| 5   | PC6  | SPI_MOSI  |                      |
+| 6   | PA4  |           |                      |
+| 7   | PC7  | SPI_MISO  |                      |
+| 8   | PA5  |           |                      |
+| 9   | PA1  |           |                      |
+| 10  | PB11 |           |                      |
+| 11  | PA0  |           |                      |
+| 12  | PF6  |           |                      |
+| 13  | PD15 |           |                      |
+| 14  | PF7  |           |                      |
+| 15  | PD13 |           |                      |
+| 16  | PF5  | PW_ON_3V3 | balenaFin Power Rail |
+| 17  | PC9  | PW_ON_5V  |                      |
+| 18  | PC10 | I2C_SDA   |                      |
+| 19  | PC11 | I2C_SCL   |                      |
+
+### Currently Unsupported
+
 - [ ] SPI Support
-- [ ] Custom Client Library for balenaFin features
+- [ ] Analogue Read/Write*
+
+> :warning: ***Analogue Write**: Due to the BGM111 implementing an IDAC instead of the typical DAC for analogue output
 
