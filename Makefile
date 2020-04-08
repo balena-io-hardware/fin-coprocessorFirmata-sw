@@ -14,6 +14,7 @@ setup:
 balena:
 	cd builds; rm -rf $@; mkdir $@; cd $@; cmake -DDEVICE=EFR32BG1B232F256GM48 -DSERIAL=FIN ../..; make
 
+#Silabs-BRD4300A
 devkit:
 	cd builds; rm -rf $@; mkdir $@; cd $@; cmake -DDEVICE=EFR32BG1B232F256GM48 -DSERIAL=DEV ../..; make
 

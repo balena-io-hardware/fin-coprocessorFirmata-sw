@@ -7,9 +7,6 @@ SerialClass Serial;
 /* Balena Commands */
 #define BALENA                          0x0B
 #define BALENA_FIRMWARE                 0x00
-#define BALENA_FIRMWARE_MAJOR_VERSION      0
-#define BALENA_FIRMWARE_MINOR_VERSION      1
-#define BALENA_FIRMWARE_BUGFIX_VERSION     0
 #define BALENA_SLEEP                    0x01
 
 #define DELAY_MULTIPLIER 1000 // base period (1) is milliseconds
@@ -61,6 +58,9 @@ struct i2c_device_info {
   byte bytes;
   byte stopTX;
 };
+
+/* balena version */
+char balena_version[sizeof(VERSION)] = VERSION;
 
 /* for i2c read continuous more */
 i2c_device_info query[I2C_MAX_QUERIES];
@@ -544,14 +544,9 @@ void sysexCallback(byte command, byte argc, byte *argv)
       Firmata.write(END_SYSEX);
       break;
     case BALENA:
-      Firmata.write(START_SYSEX);
-      Firmata.write(BALENA);
-      Firmata.write(argv[0]);
       switch (argv[0]) {
         case BALENA_FIRMWARE:
-          Firmata.write(BALENA_FIRMWARE_MAJOR_VERSION);
-          Firmata.write(BALENA_FIRMWARE_MINOR_VERSION);
-          Firmata.write(BALENA_FIRMWARE_BUGFIX_VERSION);
+          Firmata.sendSysex(BALENA, sizeof(balena_version) - 1,(byte *) balena_version);
           break;
         case BALENA_SLEEP:
           if (argc > 5) {
@@ -575,7 +570,6 @@ void sysexCallback(byte command, byte argc, byte *argv)
         default:
           break;
       }
-      Firmata.write(END_SYSEX);
       break;
     case SERIAL_MESSAGE:
 #ifdef FIRMATA_SERIAL_FEATURE
@@ -686,7 +680,6 @@ int main(void)
 	Serial.begin(57600);
 
 	Firmata.begin(Serial);
-
 
 
 	while(true){

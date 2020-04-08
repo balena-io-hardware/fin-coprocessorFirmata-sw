@@ -78,6 +78,19 @@ set(SOURCES
 
 # Generate executable and link
 add_executable(${TARGET} ${SOURCES})
+
+##### Git Versioning #####
+
+# Add build tag to firmware version
+find_package(Git)
+add_custom_target(version
+  ${CMAKE_COMMAND} -D SRC=${CMAKE_SOURCE_DIR}/toolchain/version.h.in
+                   -D DST=${CMAKE_SOURCE_DIR}/include/balena/version.h
+                   -D GIT_EXECUTABLE=${GIT_EXECUTABLE}
+                   -P ${CMAKE_SOURCE_DIR}/toolchain/version.cmake
+)
+#add_dependencies(${TARGET} version)
+
 target_link_libraries(${TARGET} ${LIBS})
 
 ##### Post build #####

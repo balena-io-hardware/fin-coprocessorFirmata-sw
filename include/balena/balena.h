@@ -17,6 +17,7 @@
 #include "ustimer.h"
 #include "tempdrv.h"
 #include "rtcdriver.h"
+#include "version.h"
 #include <cstddef>
 
 #include "bsphalconfig.h"
