@@ -11,6 +11,7 @@ if(GIT_EXECUTABLE AND NOT DEFINED VERSION)
     )
   if(NOT GIT_DESCRIBE_ERROR_CODE)
     set(VERSION ${GIT_DESCRIBE_VERSION})
+    message("Setting version to ${VERSION}.")
   endif()
 endif()
  

@@ -22,3 +22,6 @@ builds/
 # Node 
 node_modules
 package-lock.json
+
+# Generated files
+include/balena/version.h
