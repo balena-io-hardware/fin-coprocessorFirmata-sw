@@ -89,7 +89,7 @@ add_custom_target(version
                    -D GIT_EXECUTABLE=${GIT_EXECUTABLE}
                    -P ${CMAKE_SOURCE_DIR}/toolchain/version.cmake
 )
-#add_dependencies(${TARGET} version)
+add_dependencies(${TARGET} version)
 
 target_link_libraries(${TARGET} ${LIBS})
 
