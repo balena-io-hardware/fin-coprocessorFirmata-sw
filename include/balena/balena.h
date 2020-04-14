@@ -11,11 +11,13 @@
 #include "em_chip.h"
 #include "em_timer.h"
 #include "em_i2c.h"
+#include "em_wdog.h"
+#include "em_rmu.h"
+#include "em_system.h"
 #include "ble-configuration.h"
 #include "board_features.h"
 #include "hal-config.h"
 #include "ustimer.h"
-#include "tempdrv.h"
 #include "rtcdriver.h"
 #include "version.h"
 #include <cstddef>
@@ -49,7 +51,7 @@ extern "C" {
 #define MODE_I2C         4
 #define MODE_SPI         5
 #define MODE_ANALOG_OUT	 12
-#define SLEEP_PIN        16
+#define POWER_PIN        16
 
 /* balenaFin Digital Pin Modes */
 #define GPIO_INPUT_PULLUP gpioModeInputPull
@@ -74,7 +76,9 @@ extern "C" {
 
 typedef unsigned char byte;
 
+/* Timers */
 extern RTCDRV_TimerID_t id;
+extern RTCDRV_TimerID_t wdog_timer;
 
 /* Pin Struct */
 struct PIN_MAP {
@@ -137,6 +141,10 @@ void triggerEvent(uint32_t timeout, RTCDRV_Callback_t callback);
 void initI2C(byte mode);
 void deinitI2C();
 void transferI2C(uint16_t device_addr, uint8_t cmd_array[], uint8_t data_array[], uint16_t cmd_len, uint16_t data_len, uint8_t flag);
+
+/* Watchdog Timer Functions */
+void initCOPROCESSOR_WDOG();
+void initCOMPUTE_WDOG();
 
 /* SPI Functions */
 // TODO

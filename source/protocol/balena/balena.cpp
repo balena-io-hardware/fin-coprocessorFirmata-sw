@@ -17,7 +17,7 @@ IDAC_OutMode_TypeDef * IDACNone;
 
 /* RTC */
 RTCDRV_TimerID_t id;
-RTCDRV_TimerID_t wall;
+RTCDRV_TimerID_t wdog_timer;
 
 /* PWM */
 TIMER_InitCC_TypeDef timerCCInit = TIMER_INITCC_DEFAULT;
@@ -130,8 +130,6 @@ void initMCU(){
 	em23init.vScaleEM23Voltage = emuVScaleEM23_LowPower;
 	EMU_EM23Init(&em23init);
 	#endif //_EMU_CTRL_EM23VSCALE_MASK
-
-	TEMPDRV_Init();
 }
 
 void initMCU_CLK(void)
@@ -163,7 +161,7 @@ void initMCU_CLK(void)
   // HFRCO not needed when using HFXO
   CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
 
-  // Enabling HFBUSCLKLE clock for LE peripherals
+  // Enabling HFBUSCLKLE clock for LE peripherals (WDOG, etc.)
   CMU_ClockEnable(cmuClock_HFLE, true);
 
   // Initialize LFXO
@@ -490,6 +488,30 @@ void transferI2C(uint16_t device_addr, uint8_t cmd_array[], uint8_t data_array[]
             result = I2C_Transfer(I2C0);
       }
 }
+
+/******************************************************************************
+ * @brief  Compute Module Watchdog Functions
+ * // TODO
+ *
+ *****************************************************************************/
+
+void initCOMPUTE_WDOG(){
+	RTCDRV_AllocateTimer(&wdog_timer);
+}
+
+/******************************************************************************
+ * @brief  Coprocessor Watchdog Functions
+ * // TODO
+ *
+ *****************************************************************************/
+
+void initCOPROCESSOR_WDOG(){
+	WDOG_Init_TypeDef wdogInit = WDOG_INIT_DEFAULT;
+	wdogInit.em3Run = true;
+	wdogInit.clkSel = wdogClkSelULFRCO;
+	wdogInit.perSel = wdogPeriod_256k; // 2049 clock cycles of a 1kHz clock  ~2 seconds period
+}
+
 
 // TODO
 

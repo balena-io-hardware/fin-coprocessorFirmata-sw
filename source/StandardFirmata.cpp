@@ -8,6 +8,8 @@ SerialClass Serial;
 #define BALENA                          0x0B
 #define BALENA_FIRMWARE                 0x00
 #define BALENA_SLEEP                    0x01
+#define BALENA_WDOG                     0x02
+#define BALENA_WDOG_ACK                 0xF2
 
 #define DELAY_MULTIPLIER 1000 // base period (1) is milliseconds
 
@@ -81,7 +83,7 @@ void setPinModeCallback(byte, int);
 void reportAnalogCallback(byte analogPin, int value);
 void sysexCallback(byte, byte, byte*);
 void powerOn(RTCDRV_TimerID_t id, void * user);
-
+void feedComputeWDOG(bool enable, bool reset);
 /******************************************************************************
  * @brief  User Callbacks
  *
@@ -93,19 +95,41 @@ struct power
   bool state;
 } power_struct;
 
+volatile struct wdog
+{
+  uint32_t period;
+  bool enable;
+  bool feed;
+} compute_wdog;
+
 void powerOn(RTCDRV_TimerID_t id, void * user)
 {
   if(power_struct.state == false){
-    digitalWrite(SLEEP_PIN, 0);
+    digitalWrite(POWER_PIN, 0);
     power_struct.state = true;
     RTCDRV_StopTimer(id);
-    RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_period, powerOn, NULL);
+    RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, compute_wdog.period, powerOn, NULL);
   }
   else {
-    digitalWrite(SLEEP_PIN, 1);
+    digitalWrite(POWER_PIN, 1);
   }
 }
 
+void feedComputeWDOG(RTCDRV_TimerID_t wdog_timer, void * user)
+{
+  digitalWrite(POWER_PIN, 0);
+  if(compute_wdog.enable == true){
+    power_struct.state = true;
+    RTCDRV_StopTimer(wdog_timer);
+    if(compute_wdog.feed == false){
+      digitalWrite(POWER_PIN, 1);
+      RTCDRV_StartTimer(wdog_timer, rtcdrvTimerTypeOneshot, 2000, feedComputeWDOG, NULL); // hold power rail down for 1000ms
+    }
+    else {
+      RTCDRV_StartTimer(wdog_timer, rtcdrvTimerTypeOneshot, compute_wdog.period, feedComputeWDOG, NULL);
+    }
+  }
+}
 
 /******************************************************************************
  * @brief  Firmata Functions
@@ -563,14 +587,36 @@ void sysexCallback(byte command, byte argc, byte *argv)
                                         (argv[3] << 7) | \
                                         (argv[2])) * (uint32_t) DELAY_MULTIPLIER; // in seconds
             if(argv[1] == 0){ // without delayed start
-              digitalWrite(SLEEP_PIN, 0);
+              digitalWrite(POWER_PIN, 0);
               power_struct.state = true;
               RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_period, powerOn, NULL);
             }
             else { // with delayed start
-              digitalWrite(SLEEP_PIN, 1);
+              digitalWrite(POWER_PIN, 1);
               power_struct.state = false;
               RTCDRV_StartTimer(id, rtcdrvTimerTypeOneshot, power_struct.sleep_delay, powerOn, NULL);
+            }
+          }
+          break;
+        case BALENA_WDOG:
+          compute_wdog.feed = (argv[1] + (argv[2] << 7));
+          if(compute_wdog.feed == true){
+            Firmata.sendSysex(BALENA, 1, (byte *) BALENA_WDOG_ACK);
+            break;
+          }
+          else if(argc > 4){
+            bool enable = (argv[3] + (argv[4] << 7));
+            if((compute_wdog.enable == false) & (enable == true)){
+              initCOMPUTE_WDOG(); // enable compute module WDOG
+              if(argc > 6){
+                compute_wdog.period = (argv[5] + (argv[6] << 7));
+                compute_wdog.enable = true;
+                RTCDRV_StartTimer(wdog_timer, rtcdrvTimerTypeOneshot, compute_wdog.period, feedComputeWDOG, NULL);
+              }
+            }
+            else if (enable == false)
+            {
+              compute_wdog.enable = false;            
             }
           }
           break;
