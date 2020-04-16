@@ -236,6 +236,13 @@ void setPinModeCallback(byte pin, int mode)
         analogWrite(PIN_TO_PWM(pin), 0);
       }
       break;
+    case PIN_MODE_I2C:
+      if (IS_PIN_I2C(pin)) {
+        // mark the pin as i2c
+        // the user must call I2C_CONFIG to enable I2C for a device
+        Firmata.setPinMode(pin, PIN_MODE_I2C);
+      }
+      break;
     case PIN_MODE_SERIAL:
 #ifdef FIRMATA_SERIAL_FEATURE
       serialFeature.handlePinMode(pin, PIN_MODE_SERIAL);
@@ -380,11 +387,11 @@ void sysexCallback(byte command, byte argc, byte *argv)
 
       switch (mode) {
         case I2C_WRITE:
-          for (byte i = 4; i < argc; i += 2) {
-            i2cDATA[(i-4)] = argv[i] + (argv[i + 1] << 7);
+          for (byte i = 0; i < ((argc-4)/2); i++) {
+            i2cDATA[i] = argv[(2*i)+4] + (argv[((2*i)+4)+1] << 7);
           }
           i2cCMD[0] = argv[2] + (argv[3] << 7);
-          transferI2C((u_int16_t) slaveAddress, i2cCMD , i2cDATA,  1, (argc-5), I2C_FLAG_WRITE_WRITE);
+          transferI2C((u_int16_t) slaveAddress, i2cCMD , i2cDATA,  1, ((argc-4)/2), I2C_FLAG_WRITE_WRITE);
           delay(10);
           break;
         case I2C_READ:
@@ -467,6 +474,9 @@ void sysexCallback(byte command, byte argc, byte *argv)
         deinitI2C();
         initI2C(i2c_mode);
       }
+      else {
+        initI2C(1); // default to external
+      }
 
       if (!isI2CEnabled) {
         enableI2CPins();
@@ -516,10 +526,10 @@ void sysexCallback(byte command, byte argc, byte *argv)
           Firmata.write(PIN_MODE_SERVO);
           Firmata.write(14);
         }
-        // if (IS_PIN_I2C(pin)) {
-        //   Firmata.write(PIN_MODE_I2C);
-        //   Firmata.write(1);
-        // }
+        if (IS_PIN_I2C(pin)) {
+          Firmata.write(PIN_MODE_I2C);
+          Firmata.write(1);
+        }
 #ifdef FIRMATA_SERIAL_FEATURE
         serialFeature.handleCapability(pin);
 #endif

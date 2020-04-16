@@ -1,10 +1,10 @@
 let firmata = require('firmata')
-const port = "/dev/ttyUSB1";
+const port = "/dev/ttyUSB0";
 
-const mcp4725 = 0x60;
-const register = {
-    WRITE: 0x40,
-    READ: 0xc3,
+const mcp4725 = {
+    ADDR: 0x60,
+    DAC: 0x40,
+    DAC_EEPROM: 0x60,
 };
 
 let board = new firmata.Board(port, {skipCapabilities: true},function(err) {
@@ -25,12 +25,14 @@ board.on("ready", () => {
     board.pinMode(dut_pw_en, board.MODES.OUTPUT);
     board.i2cConfig(0);
 
-    board.i2cWrite(mcp4725, register.WRITE, [target >> 4, (target & 0x0F) << 4]);
+    board.i2cWrite()
+
+    board.i2cWrite(mcp4725.ADDR, mcp4725.DAC, [target >> 4, (target & 0x0F) << 4]);
     console.log("DAC Value Write: ", target);
 
     board.digitalWrite(dut_pw_en, 1); // Enable DUT power
 
-    board.i2cRead(mcp4725, register.READ, 3, data => {
+    board.i2cRead(mcp4725.ADDR, mcp4725.DAC, 3, data => {
         const output = (data[1] << 4) | (data[2] >> 4);
         console.log("DAC Value Read: ", output);
     });
