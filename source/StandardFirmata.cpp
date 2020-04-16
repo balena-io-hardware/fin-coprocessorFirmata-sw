@@ -467,6 +467,9 @@ void sysexCallback(byte command, byte argc, byte *argv)
         deinitI2C();
         initI2C(i2c_mode);
       }
+      else {
+        initI2C(1); // default to external
+      }
 
       if (!isI2CEnabled) {
         enableI2CPins();
