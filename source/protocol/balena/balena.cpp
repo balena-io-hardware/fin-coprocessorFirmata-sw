@@ -434,17 +434,21 @@ void initI2C(byte mode)
 	// Use ~400khz SCK
 	i2cInit.freq = I2C_FREQ_FAST_MAX;
 
-	// Using PC10 (SDA) and PC11 (SCL)
-	GPIO_PinModeSet(gpioPortC, 10, gpioModeWiredAndPullUpFilter, 1);
-	GPIO_PinModeSet(gpioPortC, 11, gpioModeWiredAndPullUpFilter, 1);
+
 
 	I2C0->ROUTEPEN = I2C_ROUTEPEN_SDAPEN | I2C_ROUTEPEN_SCLPEN;
 	if(mode == 0){
+		// Using PC10 (SDA) and PC11 (SCL)
+		GPIO_PinModeSet(gpioPortC, 10, gpioModeWiredAndPullUpFilter, 1);
+		GPIO_PinModeSet(gpioPortC, 11, gpioModeWiredAndPullUpFilter, 1);
 		// Internal I2C interface (SCL_PC11 & SDA_PC10)
 		I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SDALOC_MASK)) | I2C_ROUTELOC0_SDALOC_LOC15;
 		I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SCLLOC_MASK)) | I2C_ROUTELOC0_SCLLOC_LOC15;
 	}
 	else {
+		// Using PB11 (SDA) and PF6 (SCL)
+		GPIO_PinModeSet(gpioPortB, 11, gpioModeWiredAndPullUpFilter, 1);
+		GPIO_PinModeSet(gpioPortF,  6, gpioModeWiredAndPullUpFilter, 1);
 		// External I2C interface (SCL_PF6 & SDA_PB11)
 		I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SDALOC_MASK)) | I2C_ROUTELOC0_SDALOC_LOC6;
 		I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SCLLOC_MASK)) | I2C_ROUTELOC0_SCLLOC_LOC29;
