@@ -84,7 +84,7 @@ void balenaInit()
 	initTimer();
 	initADC();
 	initPWM();
-	initI2C(0);
+	initI2C(1);
 };
 
 void reset(){
@@ -447,7 +447,7 @@ void initI2C(byte mode)
 	else {
 		// External I2C interface (SCL_PF6 & SDA_PB11)
 		I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SDALOC_MASK)) | I2C_ROUTELOC0_SDALOC_LOC6;
-		I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SCLLOC_MASK)) | I2C_ROUTELOC0_SCLLOC_LOC10;
+		I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SCLLOC_MASK)) | I2C_ROUTELOC0_SCLLOC_LOC29;
 	}
 
 	// Initializing the I2C
