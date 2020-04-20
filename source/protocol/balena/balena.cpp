@@ -85,6 +85,9 @@ void balenaInit()
 	initADC();
 	initPWM();
 	initI2C(1);
+
+	// GPIO_PinModeSet(gpioPortB, 11, gpioModePushPull, 1);
+
 };
 
 void reset(){
@@ -452,6 +455,13 @@ void initI2C(byte mode)
 		// External I2C interface (SCL_PF6 & SDA_PB11)
 		I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SDALOC_MASK)) | I2C_ROUTELOC0_SDALOC_LOC6;
 		I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SCLLOC_MASK)) | I2C_ROUTELOC0_SCLLOC_LOC29;
+
+		// // Using PC9 (SDA) and PC8 (SCL)
+		// GPIO_PinModeSet(gpioPortC, 9, gpioModeWiredAndPullUpFilter, 1);
+		// GPIO_PinModeSet(gpioPortC, 8, gpioModeWiredAndPullUpFilter, 1);
+		// // External I2C interface (SCL_PF6 & SDA_PB11)
+		// I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SDALOC_MASK)) | I2C_ROUTELOC0_SDALOC_LOC13;
+		// I2C0->ROUTELOC0 = (I2C0->ROUTELOC0 & (~_I2C_ROUTELOC0_SCLLOC_MASK)) | I2C_ROUTELOC0_SCLLOC_LOC13;
 	}
 
 	// Initializing the I2C
@@ -470,7 +480,7 @@ void deinitI2C()
 
 void transferI2C(uint16_t device_addr, uint8_t cmd_array[], uint8_t data_array[], uint16_t cmd_len, uint16_t data_len, uint8_t flag)
 {
-	uint16_t pre_time,cur_time,timeout = 5000;
+	uint16_t pre_time,cur_time,timeout = 500;
 	// Transfer structure
 	I2C_TransferSeq_TypeDef i2cTransfer;
 
@@ -495,6 +505,11 @@ void transferI2C(uint16_t device_addr, uint8_t cmd_array[], uint8_t data_array[]
 		pre_time = millis();
 		result = I2C_Transfer(I2C0);
 		if((pre_time - cur_time > timeout) && (result != i2cTransferDone)){
+			for (byte i = 0; i < i2cTransfer.buf[1].len; i++)
+			{
+				// flush data buffer
+				i2cTransfer.buf[1].data[i] = 0;
+			}
 			break;
 		}
 	}
