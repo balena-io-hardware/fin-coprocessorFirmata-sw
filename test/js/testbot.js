@@ -2,7 +2,7 @@ let firmata = require('firmata')
 const port = "/dev/ttyUSB0";
 
 const mcp4725 = {
-    ADDR: 0x50,
+    ADDR: 0x60,
     DAC: 0x40,
     DAC_EEPROM: 0x60,
 };
