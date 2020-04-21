@@ -27,7 +27,7 @@ board.on("ready", () => {
 
     board.i2cWrite()
 
-    board.i2cWrite(mcp4725.ADDR, mcp4725.DAC, [0,target >> 4, (target & 0x0F) << 4]);
+    board.i2cWrite(mcp4725.ADDR, mcp4725.DAC, [target >> 4, (target & 0x0F) << 4]);
     console.log("DAC Value Write: ", target);
 
     board.digitalWrite(dut_pw_en, 1); // Enable DUT power
