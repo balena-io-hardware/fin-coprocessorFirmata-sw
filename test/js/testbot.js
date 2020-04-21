@@ -1,5 +1,8 @@
 let firmata = require('firmata')
-const port = "/dev/ttyUSB0";
+const port = "/dev/ttyS0";
+
+const balena_sysex = 0x0B;
+const balena_sysex_sub_command = 0x00; // subcommand for requesting firmware version
 
 const mcp4725 = {
     ADDR: 0x60,
@@ -19,13 +22,17 @@ board.on("ready", () => {
     console.log("Ready");
     console.log('board.firmware: ', board.firmware);
 
+    board.sysexCommand([balena_sysex, balena_sysex_sub_command]);
+    board.sysexResponse(balena_sysex, data => {
+        const balena_version = firmata.decode(data);
+        console.log("Balena Firmata Version: ", String.fromCharCode.apply(null, balena_version));
+    })
+
     const target = 2857; // See testbot calculation for target value
     const dut_pw_en = 14;
 
     board.pinMode(dut_pw_en, board.MODES.OUTPUT);
     board.i2cConfig(0);
-
-    board.i2cWrite()
 
     board.i2cWrite(mcp4725.ADDR, mcp4725.DAC, [target >> 4, (target & 0x0F) << 4]);
     console.log("DAC Value Write: ", target);
