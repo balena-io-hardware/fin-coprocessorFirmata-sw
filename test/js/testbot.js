@@ -47,6 +47,6 @@ board.on("ready", () => {
     });
 });
 
-board.sysexResponse(STRING_DATA, data => {
-    console.log(String.fromCharCode.apply(null, firmata.decode(data)));
+board.on("string",message => {
+    console.log(message);
 });
