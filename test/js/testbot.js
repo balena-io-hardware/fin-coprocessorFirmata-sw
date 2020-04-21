@@ -47,6 +47,6 @@ board.on("ready", () => {
     });
 });
 
-board.on("string",message => {
+board.on("string", message => {
     console.log(message);
 });
