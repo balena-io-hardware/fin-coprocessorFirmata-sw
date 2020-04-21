@@ -140,11 +140,15 @@ void readAndReportData(byte address, int theRegister, byte numBytes, byte stopTX
   // allow I2C requests that don't require a register read
   // for example, some devices using an interrupt pin to signify new data available
   // do not always require the register read so upon interrupt you call Wire.requestFrom()
-
+  byte status;
   i2cCMD[0] = theRegister;
   if (theRegister != I2C_REGISTER_NOT_SPECIFIED) {
 
-    transferI2C((u_int16_t) address, i2cCMD, i2cDATA, 1, numBytes, I2C_FLAG_WRITE_READ);
+    status = transferI2C((u_int16_t) address, i2cCMD, i2cDATA, 1, numBytes, I2C_FLAG_WRITE_READ);
+    if(status == I2C_ERR){
+      Firmata.sendString("I2C Error");
+      return;
+    }
 
     if (i2cReadDelayTime > 0) {
       // delay is necessary for some devices such as WiiNunchuck
@@ -154,7 +158,11 @@ void readAndReportData(byte address, int theRegister, byte numBytes, byte stopTX
     i2cCMD[0] = 0;  // fill the register with a dummy value
   }
 
-  transferI2C((u_int16_t) address, i2cCMD, i2cDATA, 1, numBytes, I2C_FLAG_WRITE_READ);
+  status = transferI2C((u_int16_t) address, i2cCMD, i2cDATA, 1, numBytes, I2C_FLAG_WRITE_READ);
+  if(status == I2C_ERR){
+    Firmata.sendString("I2C Error");
+    return;
+  }
 
   uint8_t payload[numBytes];
 
@@ -361,6 +369,7 @@ void sysexCallback(byte command, byte argc, byte *argv)
   byte slaveAddress;
   byte data;
   byte i2c_mode;
+  byte status;
   int slaveRegister;
   unsigned int delayTime;
 
@@ -391,7 +400,11 @@ void sysexCallback(byte command, byte argc, byte *argv)
             i2cDATA[i] = argv[(2*i)+4] + (argv[((2*i)+4)+1] << 7);
           }
           i2cCMD[0] = argv[2] + (argv[3] << 7);
-          transferI2C((u_int16_t) slaveAddress, i2cCMD , i2cDATA,  1, ((argc-4)/2), I2C_FLAG_WRITE_WRITE);
+          status = transferI2C((u_int16_t) slaveAddress, i2cCMD , i2cDATA,  1, ((argc-4)/2), I2C_FLAG_WRITE_WRITE);
+          if(status == I2C_ERR){
+            Firmata.sendString("I2C Error");
+            return;
+          }
           delay(10);
           break;
         case I2C_READ:
