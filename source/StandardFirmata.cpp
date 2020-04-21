@@ -146,7 +146,7 @@ void readAndReportData(byte address, int theRegister, byte numBytes, byte stopTX
 
     status = transferI2C((u_int16_t) address, i2cCMD, i2cDATA, 1, numBytes, I2C_FLAG_WRITE_READ);
     if(status == I2C_ERR){
-      Firmata.sendString("I2C Error");
+      Firmata.sendString("I2C Error: Unable to read.");
       return;
     }
 
@@ -160,7 +160,7 @@ void readAndReportData(byte address, int theRegister, byte numBytes, byte stopTX
 
   status = transferI2C((u_int16_t) address, i2cCMD, i2cDATA, 1, numBytes, I2C_FLAG_WRITE_READ);
   if(status == I2C_ERR){
-    Firmata.sendString("I2C Error");
+    Firmata.sendString("I2C Error: Unable to read.");
     return;
   }
 
@@ -402,7 +402,7 @@ void sysexCallback(byte command, byte argc, byte *argv)
           i2cCMD[0] = argv[2] + (argv[3] << 7);
           status = transferI2C((u_int16_t) slaveAddress, i2cCMD , i2cDATA,  1, ((argc-4)/2), I2C_FLAG_WRITE_WRITE);
           if(status == I2C_ERR){
-            Firmata.sendString("I2C Error");
+            Firmata.sendString("I2C Error: Unable to write.");
             return;
           }
           delay(10);
