@@ -17,7 +17,6 @@
 #include "ustimer.h"
 #include "tempdrv.h"
 #include "rtcdriver.h"
-#include "version.h"
 #include <cstddef>
 
 #include "bsphalconfig.h"
@@ -68,10 +67,6 @@ extern "C" {
 #define CORE_FREQUENCY  14000000
 #define RTC_MIN_TIMEOUT 32000
 #define I2C_RXBUFFER_SIZE 10
-#define I2C_TXBUFFER_SIZE 10
-#define CMD_ARRAY_SIZE        1
-#define DATA_ARRAY_SIZE       10
-#define I2C_ERR            0xFF
 
 typedef unsigned char byte;
 
@@ -135,9 +130,8 @@ void deviceMode(unsigned int pin_no, unsigned int mode);
 void triggerEvent(uint32_t timeout, RTCDRV_Callback_t callback);
 
 /* I2C Functions */
-void initI2C(byte mode);
-void deinitI2C();
-int transferI2C(uint16_t device_addr, uint8_t cmd_array[], uint8_t data_array[], uint16_t cmd_len, uint16_t data_len, uint8_t flag);
+void initI2C(void);
+// TODO
 
 /* SPI Functions */
 // TODO

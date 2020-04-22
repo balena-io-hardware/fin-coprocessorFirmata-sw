@@ -911,7 +911,7 @@ writePort(port, value, bitmask):  Write an 8 bit port.
 
 #define IS_PIN_PWM(p)           digitalPinHasPWM(p)
 #define IS_PIN_SERVO(p)         IS_PIN_DIGITAL(p)
-#define IS_PIN_I2C(p)           ((p) == 18 || (p) == 19 || (p) == 10 || (p) == 12)
+#define IS_PIN_I2C(p)           ((p) == 18 || (p) == 19)
 #define IS_PIN_SPI(p)           ((p) == 1 || (p)== 5 || (p) == 7 || (p == 3))
 #define PIN_TO_DIGITAL(p)       (p)
 #define PIN_TO_ANALOG(p)        (p)

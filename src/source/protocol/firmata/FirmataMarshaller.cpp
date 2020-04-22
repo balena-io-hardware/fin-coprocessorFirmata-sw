@@ -325,6 +325,7 @@ const
   FirmataStream->write(REPORT_FIRMWARE);
   FirmataStream->write(major);
   FirmataStream->write(minor);
+//  FirmataStream->write(33);
   for (i = 0; i < bytec; ++i) {
     encodeByteStream(sizeof(bytev[i]), reinterpret_cast<uint8_t *>(&bytev[i]));
   }
