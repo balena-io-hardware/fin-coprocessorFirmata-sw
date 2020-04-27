@@ -9,6 +9,8 @@ This is an implementation of the [Firmata](https://github.com/firmata/protocol) 
 The easiest way to install the Firmata application onto your board is to run the [balena application](https://github.com/balena-io/balena-fin-firmata-flash) provided. This targets the latest verision of the Balena Firmata application. 
 This balena application will run and install [OpenOCD](http://openocd.org/) on your Fin in order to provision the Coprocessor with both a bootloader and the Firmata application.
 
+We also provide a [Dockerfile](Dockerfile) for you to easily generate an environment for compiling this firmware yourself.
+
 ### Build & Manually Flash
 
 It is also possible to build the source and manually flash the Coprocessor however, in order to flash the Coprocessor you will need to either load the compiled firmware onto the Compute Module and flash it using OpenOCD or program the Coprocessor using an external programmer such as a [Segger JLink ](https://www.segger.com/products/debug-probes/j-link/).
