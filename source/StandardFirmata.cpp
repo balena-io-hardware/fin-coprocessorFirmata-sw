@@ -7,21 +7,18 @@ SerialClass Serial;
 /* Balena Commands */
 #define BALENA                          0x0B
 #define BALENA_FIRMWARE                 0x00
-#define BALENA_FIRMWARE_MAJOR_VERSION      0
-#define BALENA_FIRMWARE_MINOR_VERSION      0
-#define BALENA_FIRMWARE_BUGFIX_VERSION     2
 #define BALENA_SLEEP                    0x01
 
 #define DELAY_MULTIPLIER 1000 // base period (1) is milliseconds
 
 #define BUFFERSIZE          256
-#define I2C_WRITE                   B00000000
-#define I2C_READ                    B00001000
-#define I2C_READ_CONTINUOUSLY       B00010000
-#define I2C_STOP_READING            B00011000
-#define I2C_READ_WRITE_MODE_MASK    B00011000
-#define I2C_10BIT_ADDRESS_MODE_MASK B00100000
-#define I2C_END_TX_MASK             B01000000
+#define I2C_WRITE                   0x00
+#define I2C_READ                    0x08
+#define I2C_READ_CONTINUOUSLY       0x10
+#define I2C_STOP_READING            0x18
+#define I2C_READ_WRITE_MODE_MASK    0x18
+#define I2C_10BIT_ADDRESS_MODE_MASK 0x20
+#define I2C_END_TX_MASK             0x40
 #define I2C_STOP_TX                 1
 #define I2C_RESTART_TX              0
 #define I2C_MAX_QUERIES             8
@@ -62,10 +59,15 @@ struct i2c_device_info {
   byte stopTX;
 };
 
+/* balena version */
+char balena_version[sizeof(VERSION)] = VERSION;
+
 /* for i2c read continuous more */
 i2c_device_info query[I2C_MAX_QUERIES];
 
-byte i2cRxData[64];
+// byte i2cDATA[64];
+uint8_t i2cCMD[I2C_TXBUFFER_SIZE];
+uint8_t i2cDATA[I2C_RXBUFFER_SIZE];
 bool isI2CEnabled = false;
 signed char queryIndex = -1;
 // default delay time between i2c read request and Wire.requestFrom()
@@ -109,6 +111,70 @@ void powerOn(RTCDRV_TimerID_t id, void * user)
  * @brief  Firmata Functions
  *
  *****************************************************************************/
+
+void enableI2CPins()
+{
+  byte i;
+  // is there a faster way to do this? would probaby require importing
+  // Arduino.h to get SCL and SDA pins
+  for (i = 0; i < TOTAL_PINS; i++) {
+    if (IS_PIN_I2C(i)) {
+      // mark pins as i2c so they are ignore in non i2c data requests
+      setPinModeCallback(i, PIN_MODE_I2C);
+    }
+  }
+
+  isI2CEnabled = true;
+
+  // Wire.begin();
+}
+
+/* disable the i2c pins so they can be used for other functions */
+void disableI2CPins() {
+  isI2CEnabled = false;
+  // disable read continuous mode for all devices
+  queryIndex = -1;
+}
+
+void readAndReportData(byte address, int theRegister, byte numBytes, byte stopTX) {
+  // allow I2C requests that don't require a register read
+  // for example, some devices using an interrupt pin to signify new data available
+  // do not always require the register read so upon interrupt you call Wire.requestFrom()
+  byte status;
+  i2cCMD[0] = theRegister;
+  if (theRegister != I2C_REGISTER_NOT_SPECIFIED) {
+
+    status = transferI2C((u_int16_t) address, i2cCMD, i2cDATA, 1, numBytes, I2C_FLAG_WRITE_READ);
+    if(status == I2C_ERR){
+      Firmata.sendString("I2C Error: Unable to read.");
+      return;
+    }
+
+    if (i2cReadDelayTime > 0) {
+      // delay is necessary for some devices such as WiiNunchuck
+      delay(i2cReadDelayTime);
+    }
+  } else {
+    i2cCMD[0] = 0;  // fill the register with a dummy value
+  }
+
+  status = transferI2C((u_int16_t) address, i2cCMD, i2cDATA, 1, numBytes, I2C_FLAG_WRITE_READ);
+  if(status == I2C_ERR){
+    Firmata.sendString("I2C Error: Unable to read.");
+    return;
+  }
+
+  uint8_t payload[numBytes];
+
+  payload[0] = address >> 1;
+  payload[1] = theRegister;
+
+  for (int i = 0; i < numBytes; i++) {
+    payload[2 + i] = i2cDATA[i];
+  }
+
+  Firmata.sendSysex(SYSEX_I2C_REPLY, numBytes + 2, payload);
+}
 
 void outputPort(byte portNumber, byte portValue, byte forceSend)
 {
@@ -176,6 +242,13 @@ void setPinModeCallback(byte pin, int mode)
         pinMode(PIN_TO_PWM(pin), GPIO_OUTPUT, 0);
         Firmata.setPinMode(pin, PIN_MODE_PWM);
         analogWrite(PIN_TO_PWM(pin), 0);
+      }
+      break;
+    case PIN_MODE_I2C:
+      if (IS_PIN_I2C(pin)) {
+        // mark the pin as i2c
+        // the user must call I2C_CONFIG to enable I2C for a device
+        Firmata.setPinMode(pin, PIN_MODE_I2C);
       }
       break;
     case PIN_MODE_SERIAL:
@@ -295,11 +368,134 @@ void sysexCallback(byte command, byte argc, byte *argv)
   byte stopTX;
   byte slaveAddress;
   byte data;
+  byte i2c_mode;
+  byte status;
   int slaveRegister;
   unsigned int delayTime;
 
   switch (command) {
   	// TODO: Add I2C
+    case I2C_REQUEST:
+      mode = argv[1] & I2C_READ_WRITE_MODE_MASK;
+      if (argv[1] & I2C_10BIT_ADDRESS_MODE_MASK) {
+        Firmata.sendString("10-bit addressing not supported");
+        return;
+      }
+      else {
+        slaveAddress = argv[0] << 1;
+      }
+
+      // need to invert the logic here since 0 will be default for client
+      // libraries that have not updated to add support for restart tx
+      if (argv[1] & I2C_END_TX_MASK) {
+        stopTX = I2C_RESTART_TX;
+      }
+      else {
+        stopTX = I2C_STOP_TX; // default
+      }
+
+      switch (mode) {
+        case I2C_WRITE:
+          for (byte i = 0; i < ((argc-4)/2); i++) {
+            i2cDATA[i] = argv[(2*i)+4] + (argv[((2*i)+4)+1] << 7);
+          }
+          i2cCMD[0] = argv[2] + (argv[3] << 7);
+          status = transferI2C((u_int16_t) slaveAddress, i2cCMD , i2cDATA,  1, ((argc-4)/2), I2C_FLAG_WRITE_WRITE);
+          if(status == I2C_ERR){
+            Firmata.sendString("I2C Error: Unable to write.");
+            return;
+          }
+          delay(10);
+          break;
+        case I2C_READ:
+          if (argc == 6) {
+            // a slave register is specified
+            slaveRegister = argv[2] + (argv[3] << 7);
+            data = argv[4] + (argv[5] << 7);  // bytes to read
+          }
+          else {
+            // a slave register is NOT specified
+            slaveRegister = I2C_REGISTER_NOT_SPECIFIED;
+            data = argv[2] + (argv[3] << 7);  // bytes to read
+          }
+          readAndReportData(slaveAddress, (int)slaveRegister, data, stopTX);
+          break;
+        case I2C_READ_CONTINUOUSLY:
+          if ((queryIndex + 1) >= I2C_MAX_QUERIES) {
+            // too many queries, just ignore
+            Firmata.sendString("too many queries");
+            break;
+          }
+          if (argc == 6) {
+            // a slave register is specified
+            slaveRegister = argv[2] + (argv[3] << 7);
+            i2cDATA[0] = argv[4] + (argv[5] << 7);  // bytes to read
+          }
+          else {
+            // a slave register is NOT specified
+            slaveRegister = (int)I2C_REGISTER_NOT_SPECIFIED;
+            i2cDATA[0] = argv[2] + (argv[3] << 7);  // bytes to read
+          }
+          queryIndex++;
+          query[queryIndex].addr = slaveAddress;
+          query[queryIndex].reg = slaveRegister;
+          query[queryIndex].bytes = i2cDATA[0];
+          query[queryIndex].stopTX = stopTX;
+          break;
+        case I2C_STOP_READING:
+          byte queryIndexToSkip;
+          // if read continuous mode is enabled for only 1 i2c device, disable
+          // read continuous reporting for that device
+          if (queryIndex <= 0) {
+            queryIndex = -1;
+          } else {
+            queryIndexToSkip = 0;
+            // if read continuous mode is enabled for multiple devices,
+            // determine which device to stop reading and remove it's data from
+            // the array, shifiting other array data to fill the space
+            for (byte i = 0; i < queryIndex + 1; i++) {
+              if (query[i].addr == slaveAddress) {
+                queryIndexToSkip = i;
+                break;
+              }
+            }
+
+            for (byte i = queryIndexToSkip; i < queryIndex + 1; i++) {
+              if (i < I2C_MAX_QUERIES) {
+                query[i].addr = query[i + 1].addr;
+                query[i].reg = query[i + 1].reg;
+                query[i].bytes = query[i + 1].bytes;
+                query[i].stopTX = query[i + 1].stopTX;
+              }
+            }
+            queryIndex--;
+          }
+          break;
+        default:
+          break;
+      }
+      break;
+    case I2C_CONFIG:
+      delayTime = (argv[0] + (argv[1] << 7));
+
+      if (argc > 1 && delayTime > 0) {
+        i2cReadDelayTime = delayTime;
+      }
+
+      if(argc > 2){
+        i2c_mode = (argv[2] + (argv[3] << 7));
+        deinitI2C();
+        initI2C(i2c_mode);
+      }
+      else {
+        initI2C(1); // default to external
+      }
+
+      if (!isI2CEnabled) {
+        enableI2CPins();
+      }
+
+      break;
     // TODO: ADD Servo
     case SAMPLING_INTERVAL:
       if (argc > 1) {
@@ -343,10 +539,10 @@ void sysexCallback(byte command, byte argc, byte *argv)
           Firmata.write(PIN_MODE_SERVO);
           Firmata.write(14);
         }
-        // if (IS_PIN_I2C(pin)) {
-        //   Firmata.write(PIN_MODE_I2C);
-        //   Firmata.write(1);
-        // }
+        if (IS_PIN_I2C(pin)) {
+          Firmata.write(PIN_MODE_I2C);
+          Firmata.write(1);
+        }
 #ifdef FIRMATA_SERIAL_FEATURE
         serialFeature.handleCapability(pin);
 #endif
@@ -378,14 +574,9 @@ void sysexCallback(byte command, byte argc, byte *argv)
       Firmata.write(END_SYSEX);
       break;
     case BALENA:
-      Firmata.write(START_SYSEX);
-      Firmata.write(BALENA);
-      Firmata.write(argv[0]);
       switch (argv[0]) {
         case BALENA_FIRMWARE:
-          Firmata.write(BALENA_FIRMWARE_MAJOR_VERSION);
-          Firmata.write(BALENA_FIRMWARE_MINOR_VERSION);
-          Firmata.write(BALENA_FIRMWARE_BUGFIX_VERSION);
+          Firmata.sendSysex(BALENA, sizeof(balena_version) - 1,(byte *) balena_version);
           break;
         case BALENA_SLEEP:
           if (argc > 5) {
@@ -409,7 +600,6 @@ void sysexCallback(byte command, byte argc, byte *argv)
         default:
           break;
       }
-      Firmata.write(END_SYSEX);
       break;
     case SERIAL_MESSAGE:
 #ifdef FIRMATA_SERIAL_FEATURE
@@ -502,6 +692,7 @@ void checkDigitalInputs(void)
  *****************************************************************************/
 int main(void)
 {
+
 	Firmata.setFirmwareVersion(FIRMATA_FIRMWARE_MAJOR_VERSION, FIRMATA_FIRMWARE_MINOR_VERSION);
 	Firmata.attach(ANALOG_MESSAGE, analogWriteCallback);
 	Firmata.attach(DIGITAL_MESSAGE, digitalWriteCallback);
@@ -514,11 +705,14 @@ int main(void)
 
 	balenaInit();
 
+
+
 	Serial.begin(57600);
 
 	Firmata.begin(Serial);
 
-	while(1){
+
+	while(true){
 		 byte pin, analogPin;
 
 		  /* DIGITALREAD - as fast as possible, check for changes and output them to the
@@ -535,7 +729,7 @@ int main(void)
 		  currentMillis = millis();
 		  if (currentMillis - previousMillis > samplingInterval) {
 		    previousMillis += samplingInterval;
-		    /* ANALOGREAD - do all analogReads() at the configured sampling interval */
+		  /* ANALOGREAD - do all analogReads() at the configured sampling interval */
 		    for (pin = 0; pin < TOTAL_PINS; pin++) {
 		      if (IS_PIN_ANALOG(pin) && Firmata.getPinMode(pin) == PIN_MODE_ANALOG) {
 		        analogPin = PIN_TO_ANALOG(pin);
@@ -547,11 +741,11 @@ int main(void)
 		      }
 		    }
 		    // report i2c data for all device with read continuous mode enabled
-//		    if (queryIndex > -1) {
-//		      for (byte i = 0; i < queryIndex + 1; i++) {
-//		        readAndReportData(query[i].addr, query[i].reg, query[i].bytes, query[i].stopTX);
-//		      }
-//		    }
+		    if (queryIndex > -1) {
+		      for (byte i = 0; i < queryIndex + 1; i++) {
+		        readAndReportData(query[i].addr, query[i].reg, query[i].bytes, query[i].stopTX);
+		      }
+		    }
 		  }
 	}
 }

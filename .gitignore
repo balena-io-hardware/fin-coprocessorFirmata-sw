@@ -19,3 +19,9 @@ builds/
 *.DS_Store
 .vscode
 
+# Node 
+node_modules
+package-lock.json
+
+# Generated files
+include/balena/version.h

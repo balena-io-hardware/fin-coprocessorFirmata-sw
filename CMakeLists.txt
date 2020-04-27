@@ -27,10 +27,19 @@ set(TARGET firmata)
 # Configure project and languages
 project(${TARGET} C CXX ASM)
 
-# Set device
+# Set default device
 if(NOT DEVICE)
-set(DEVICE EFM32GG990F1024)
+set(DEVICE EFR32BG1B232F256GM48)
 endif()
+
+# Setup serial interface
+if(NOT SERIAL)
+set(SERIAL DEV)
+endif()
+
+add_compile_definitions(LOC=${SERIAL}_LOC)
+add_compile_definitions(RX=${SERIAL}_PIN_RX)
+add_compile_definitions(TX=${SERIAL}_PIN_TX)
 
 # Set build
 if(NOT CMAKE_BUILD_TYPE)
@@ -69,6 +78,19 @@ set(SOURCES
 
 # Generate executable and link
 add_executable(${TARGET} ${SOURCES})
+
+##### Git Versioning #####
+
+# Add build tag to firmware version
+find_package(Git)
+add_custom_target(version
+  ${CMAKE_COMMAND} -D SRC=${CMAKE_SOURCE_DIR}/toolchain/version.h.in
+                   -D DST=${CMAKE_SOURCE_DIR}/include/balena/version.h
+                   -D GIT_EXECUTABLE=${GIT_EXECUTABLE}
+                   -P ${CMAKE_SOURCE_DIR}/toolchain/version.cmake
+)
+add_dependencies(${TARGET} version)
+
 target_link_libraries(${TARGET} ${LIBS})
 
 ##### Post build #####
