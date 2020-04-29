@@ -9,36 +9,77 @@ This is an implementation of the [Firmata](https://github.com/firmata/protocol) 
 The easiest way to install the Firmata application onto your board is to run the [balena application](https://github.com/balena-io/balena-fin-firmata-flash) provided. This targets the latest verision of the Balena Firmata application. 
 This balena application will run and install [OpenOCD](http://openocd.org/) on your Fin in order to provision the Coprocessor with both a bootloader and the Firmata application.
 
-### Build & Manually Flash
+We also provide a [Dockerfile](Dockerfile) for you to easily generate an environment for compiling this firmware yourself.
+
+#### Build
+
+To build the docker image, run:
+
+```bash
+docker build . --tag firmata 
+```
+
+A container can then be run with:
+
+```bash
+docker run -it -v ${YOUR-OUTPUT-DIRECTORY}:/out --name firmata-build firmata "make" "all"
+```
+
+> :wrench: * `all` can be substituted for `balena` if you only wish to target to balenaFin or `devkit` for the Silabs BRD4001A
+
+This will output the build files to a directory specified by `YOUR-OUTPUT-DIRECTORY`, e.g. `~/Downloads/balena`.
+The output binaries for flashing the coprocessor can be found under `${YOUR-OUTPUT-DIRECTORY}/builds/balena`.
+
+If you wish to stop this container:
+
+`docker stop firmata-build`
+
+And to remove the container:
+
+`docker rm firmata-build`
+
+### Manually Build
 
 It is also possible to build the source and manually flash the Coprocessor however, in order to flash the Coprocessor you will need to either load the compiled firmware onto the Compute Module and flash it using OpenOCD or program the Coprocessor using an external programmer such as a [Segger JLink ](https://www.segger.com/products/debug-probes/j-link/).
 
 #### Dependencies
 
+Before attempting to build, ensure the following dependencies are installed. 
+We recommend ARM GCC version `9-2019-q4-major`, as used in our docker image.
+
  - cmake
  - make
- - arm-none-eabi-gcc*
+ - arm-none-eabi-gcc
 
-If using a JLink programmer to externally flash:
+> :wrench: Make sure these are all located in your `$PATH`
+
+#### Build
+
+With the dependencies installed, build with the following commands:
+
+1. `cd src` to change directory to the source files
+2. `make setup` to generate the builds directory
+3. `make balena` to execute the build*
+
+> :wrench: * `make devkit` can be used to build for the Silabs BRD4001A
+
+### Flashing
+
+As the coprocessor is coupled to the compute module, we recommend that you use our flashing [example](https://github.com/balena-io/balena-fin-firmata-flash) to automate the flashing process.
+
+#### Flashing via balenaFin Compute Module
+
+If you wish to deploy this coprocessor firmware to a balenaFin running either [balenaOS](https://dashboard.balena-cloud.com) or [Raspbian](https://github.com/balena-os/pi-gen/releases), checkout this [example](https://github.com/balena-io/balena-fin-firmata-flash).
+
+#### JLink Programmer
+
+An external JLink programmer may be used to flash the coprocessor (for example, if using a Silabs Development Kit)
 
  - [JLink tools](https://www.segger.com/jlink-software.html)
 
-> :wrench: * Make sure this is in your `$PATH`
+To flash, using an external JLink programmer:
 
-#### Flashing
-
-With the dependencies installed, to build, run the following commands:
-
-1. `make setup` to generate the build directory
-2. `make balena` to execute the build*
-
-To flash, if using an external JLink programmer:
-
-1. `cd builds/balena && make flash` to flash to a device (that is connected via a JLink programmer)
-
-> :wrench: * `make devkit` can be used to build for the Silabs BRD4001A development kit
-
-If you wish to deploy this coprocessor firmware to a balenaFin running either [balenaOS](https://dashboard.balena-cloud.com) or [Raspbian](https://github.com/balena-os/pi-gen/releases), checkout this [example](https://github.com/balena-io/balena-fin-firmata-flash).
+1. `cd builds/devkit && make flash` to flash to a device
 
 ## Firmata Protocol v2.5.8
 

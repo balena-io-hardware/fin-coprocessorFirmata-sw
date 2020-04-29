@@ -24,4 +24,4 @@ node_modules
 package-lock.json
 
 # Generated files
-include/balena/version.h
+src/include/balena/version.h
