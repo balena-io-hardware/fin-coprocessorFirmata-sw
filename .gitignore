@@ -22,6 +22,7 @@ builds/
 # Node 
 node_modules
 package-lock.json
+.eslintrc.json
 
 # Generated files
 src/include/balena/version.h
