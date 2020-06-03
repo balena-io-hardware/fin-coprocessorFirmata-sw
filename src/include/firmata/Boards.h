@@ -906,13 +906,14 @@ writePort(port, value, bitmask):  Write an 8 bit port.
 #if defined(DEV_BOARD)
 #define VERSION_BLINK_PIN       LED_BUILTIN
 #endif
-#define IS_PIN_DIGITAL(p)       ((p) >= 0 && (p) < TOTAL_PINS)
+#define IS_PIN_DIGITAL(p)       ((p) >= 0 && (p) < 16)
 #define IS_PIN_ANALOG(p)        ((p) >= 0 && (p) < 16)
 
 #define IS_PIN_PWM(p)           digitalPinHasPWM(p)
 #define IS_PIN_SERVO(p)         IS_PIN_DIGITAL(p)
 #define IS_PIN_I2C(p)           ((p) == 18 || (p) == 19 || (p) == 10 || (p) == 12)
 #define IS_PIN_SPI(p)           ((p) == 1 || (p)== 5 || (p) == 7 || (p == 3))
+#define IS_PIN_IDAC(p)          !(((p) == 3 || (p) == 5 || (p) == 7 || (p) == 12 || (p) == 14) && (p) < 16)
 #define PIN_TO_DIGITAL(p)       (p)
 #define PIN_TO_ANALOG(p)        (p)
 #define PIN_TO_PWM(p)           (p)

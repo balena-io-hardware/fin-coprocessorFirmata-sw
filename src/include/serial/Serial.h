@@ -7,6 +7,7 @@
 #include "em_chip.h"
 #include "em_cmu.h"
 #include "em_device.h"
+#include "balena.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
