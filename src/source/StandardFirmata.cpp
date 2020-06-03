@@ -743,7 +743,7 @@ void sysexCallback(byte command, byte argc, byte *argv)
           byte success = setIDAC(argv[2], argv[3]); // Pin, Range
           if (success == BALENA_ERR)
           {
-            Firmata.sendString("Balena Error: No IDAC configuration for pin");
+            Firmata.sendString("Balena Error: Incorrect IDAC config for pin");
             break;
           }
         }
@@ -752,7 +752,7 @@ void sysexCallback(byte command, byte argc, byte *argv)
           byte success = writeIDAC(argv[2], argv[3]); // Pin, Range
           if (success == BALENA_ERR)
           {
-            Firmata.sendString("Balena Error: No IDAC configuration for pin");
+            Firmata.sendString("Balena Error: Incorrect IDAC config for pin");
             break;
           }
         }

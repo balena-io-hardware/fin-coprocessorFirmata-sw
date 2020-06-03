@@ -29,7 +29,8 @@ extern "C"
 /* BGM111 Config */
 #define EFR32BGM111 1
 #define NUM_PINS 20
-#define DAC_COUNT 6
+#define BALENA_IDAC_COUNT 11
+#define BALENA_ADC_COUNT 16
 #define DEVINFO_MODULEINFO_HFXOCALVAL_MASK 0x00080000UL
 // Calibration value for HFXO CTUNE is at DEVINFO Offset 0x08
 #define DEVINFO_MODULEINFO_CRYSTALOSCCALVAL (*((uint16_t *)(uint32_t)(DEVINFO_BASE + 0x8UL)))

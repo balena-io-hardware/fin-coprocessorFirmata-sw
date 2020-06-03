@@ -53,7 +53,7 @@ IDAC_Range_TypeDef idac_lookup[4] = {
     idacCurrentRange2,
     idacCurrentRange3};
 
-ADC_LOOKUP adc_pin[NUM_PINS]{
+ADC_LOOKUP adc_pin[BALENA_ADC_COUNT]{
     {adcPosSelAPORT3XCH6},  // P0
     {adcPosSelAPORT3YCH29}, // P1
     {adcPosSelAPORT4YCH10}, // P2
@@ -72,7 +72,7 @@ ADC_LOOKUP adc_pin[NUM_PINS]{
     {adcPosSelAPORT3YCH5},  // P15
 };
 
-IDAC_LOOKUP idac_pin[NUM_PINS]{
+IDAC_LOOKUP idac_pin[BALENA_IDAC_COUNT]{
     {idacOutputAPORT1XCH6},  // P0
     {idacOutputAPORT1YCH29}, // P1
     {idacOutputAPORT1XCH10}, // P2
@@ -86,7 +86,7 @@ IDAC_LOOKUP idac_pin[NUM_PINS]{
     {idacOutputAPORT1YCH5}   // P15
 };
 
-IDAC_RANGE_LOOKUP idac_range[NUM_PINS]{
+IDAC_RANGE_LOOKUP idac_range[BALENA_IDAC_COUNT]{
     {idacCurrentRange0}, // P0
     {idacCurrentRange0}, // P1
     {idacCurrentRange0}, // P2
@@ -136,6 +136,7 @@ void balenaInit()
   initTimer();
   initADC();
   initPWM();
+  initIDAC();
   initI2C(1);
 };
 
@@ -407,6 +408,8 @@ int setIDAC(unsigned int pin_no, byte range)
   int idac_config = port_pin[pin_no].idac;
   if (idac_config == MODE_NONE)
     return BALENA_ERR;
+  if (range > 3)
+    return BALENA_ERR;
   idac_range[port_pin[pin_no].idac].idac_range = idac_lookup[range];
   return BALENA_SUCCESS;
 }
@@ -415,12 +418,18 @@ void resetIDAC()
 {
   IDAC_Enable(IDAC0, false);
   IDAC_Reset(IDAC0);
+  for (byte i = 0; i <= BALENA_IDAC_COUNT; i++)
+  {
+    idac_range[i].idac_range = idacCurrentRange0;
+  }
 }
 
 int writeIDAC(unsigned int pin_no, byte step)
 {
   int idac_config = port_pin[pin_no].idac;
   if (idac_config == MODE_NONE)
+    return BALENA_ERR;
+  if (step > 31)
     return BALENA_ERR;
   IDACInit.outMode = idac_pin[idac_config].idac; // Choose output to be on PB8
   // Choose the output current to be 2 microamps
