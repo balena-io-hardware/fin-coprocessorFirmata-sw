@@ -142,7 +142,7 @@ Which represents:
 | ---------------------- | ----------- | ------------------  | ----------------------- | ----------------------- | ------- |
 | report balena firmware | 0x00        |          -          |            -            |             -           |  ✅     |
 | power down             | 0x01        | uint8_t init_delay  | uint8_t sleep_period[0] | uint8_t sleep_period[3] |  ✅     |
-| set hardware config.   | 0x02        | uint8_t idac_toggle |            -            |             -           |  ✅     |
+| configure IDAC         | 0x02        | uint8_t idac_mode   |      uint8_t pin        | [see idac](#idac-write-current-0x02) |  ✅     |
 
 #### Report balena Firmware [`0x00`]
 
@@ -156,7 +156,7 @@ After the `sleep_period` has expired, the coprocessor will resume power to the C
 - `init_delay` is composed of **1 byte**, specified in seconds (passing 0 will immediate power down the CM3 and is not recommended!)
 - `sleep_period` is composed of **4 bytes**, specified in seconds (max value of (`uint32_t` / 1000), eqv. of ~4294967 seconds)
 
-#### IDAC Write (Current)  [`0x02`]
+#### IDAC Write (Current) [`0x02`]
 
 The BGM111 has an additional Current Digital to Analogue Converter (IDAC), which can be used as a current source/sink.
 This is mapped to the balena subcommand `0x02` and can be controlled in a similar way as standard `Analogue Write` command at this endpoint.
