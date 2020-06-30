@@ -206,28 +206,33 @@ Resetting the IDAC will disable and clear the configuration on any pin currently
 
 ## Firmata Pin Map
 
-| Pin | Port | Function              | IDAC   | Note                                                     |
-|-----|------|-----------------------|--------|----------------------------------------------------------|
-| 0   | PD14 |                       |   ✅   |                                                          |
-| 1   | PB13 | SPI_CS                |   ✅   |                                                          |
-| 2   | PA2  |                       |   ✅   |                                                          |
-| 3   | PC8  | SPI_CLK               |        |                                                          |
-| 4   | PA3  |                       |   ✅   |                                                          |
-| 5   | PC6  | SPI_MOSI              |        |                                                          |
-| 6   | PA4  |                       |   ✅   |                                                          |
-| 7   | PC7  | SPI_MISO              |        |                                                          |
-| 8   | PA5  |                       |   ✅   |                                                          |
-| 9   | PA1  |                       |   ✅   |                                                          |
-| 10  | PB11 | I2C_SDA (external)    |   ✅   |                                                          |
-| 11  | PA0  |                       |   ✅   |                                                          |
-| 12  | PF6  | I2C_SCL (external)    |        |                                                          |
-| 13  | PD15 |                       |   ✅   |                                                          |
-| 14  | PF7  |                       |        |                                                          |
-| 15  | PD13 |                       |   ✅   |                                                          |
-| 16  | PF5  | PW_ON_3V3             |        | balenaFin Power Rail (used for sleep mode)               |
-| 17  | PC9  | PW_ON_5V              |        |                                                          |
-| 18  | PC10 | I2C_SDA (internal)    |        | multi-master on Compute Module's I2C RTC and RGB LED     |
-| 19  | PC11 | I2C_SCL (internal)    |        |                                                          |
+This table refers to the Firmata standard pin mapping supported by the coprocessor.
+The `BGM111` table column can be referenced in the [BGM111 Connector Pinout](https://github.com/balena-io/balena-fin/blob/master/documentation/markdown/balenaFin/v1.1/datasheet/datasheet.md#32-silicon-labs-bgm111-connector-pinout) section of the balenaFin datasheet can be used for the physical pin lookup on the balenaFin.
+
+| Firmata Pin  | BGM111 | Function              | IDAC   | Note                                                     |
+|--------------|--------|-----------------------|--------|----------------------------------------------------------|
+| 0            | PD14   |                       |   ✅   |                                                          |
+| 1            | PB13   | SPI_CS                |   ✅   |                                                          |
+| 2            | PA2    |                       |   ✅   |                                                          |
+| 3            | PC8    | SPI_CLK               |        |                                                          |
+| 4            | PA3    |                       |   ✅   |                                                          |
+| 5            | PC6    | SPI_MOSI              |        |                                                          |
+| 6            | PA4    |                       |   ✅   |                                                          |
+| 7            | PC7    | SPI_MISO              |        |                                                          |
+| 8            | PA5    |                       |   ✅   |                                                          |
+| 9            | PA1    |                       |   ✅   |                                                          |
+| 10           | PB11   | I2C_SDA (external)    |   ✅   |                                                          |
+| 11           | PA0    |                       |   ✅   |                                                          |
+| 12           | PF6    | I2C_SCL (external)    |        |                                                          |
+| 13           | PD15   |                       |   ✅   |                                                          |
+| 14           | PF7    |                       |        |                                                          |
+| 15           | PD13   |                       |   ✅   |                                                          |
+| 16*          | PF5    | PW_ON_3V3             |        | balenaFin Power Rail (used for sleep mode)               |
+| 17*          | PC9    | PW_ON_5V              |        |                                                          |
+| 18*          | PC10   | I2C_SDA (internal)    |        | multi-master on Compute Module's I2C RTC and RGB LED     |
+| 19*          | PC11   | I2C_SCL (internal)    |        |                                                          |
+
+> :warning: * These pins are not accessible on the external balenaFin expansion header. Extra care should be taken when mapping Firmata pin 16 and 17 as these control the power rails of the balenaFin.
 
 ## Currently Unsupported
 
