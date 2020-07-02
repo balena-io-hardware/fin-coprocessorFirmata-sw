@@ -1,4 +1,4 @@
 {
-    "port": "/dev/ttyACM1",
-    "baudrate" : 115200
+    "port": "/dev/ttyS0",
+    "baudrate": 57600
 }
