@@ -7,29 +7,27 @@ const pin = 14; // Devkit LED
 
 const board = new firmata.Board(
     new Serialport(
-        config.port,
-        {baudRate: config.baudrate},
-    ),
-    {skipCapabilities: true},
+        config.port, { baudRate: config.baudrate },
+    ), { skipCapabilities: true },
     function(err) {
-      if (err) {
-        console.log(err);
-        board.reset();
-        return;
-      }
+        if (err) {
+            console.log(err);
+            board.reset();
+            return;
+        }
     },
 );
 
+
 board.on('ready', () => {
-  console.log('Ready');
-  console.log('board.firmware: ', board.firmware);
+    console.log('Ready');
+    console.log('board.firmware: ', board.firmware);
 
-  let state = 1;
+    let state = 1;
 
-  board.pinMode(pin, board.MODES.OUTPUT);
+    board.pinMode(pin, board.MODES.OUTPUT);
 
-  setInterval(() => {
-    board.digitalWrite(pin, (state ^= 1));
-  }, blinkInterval);
+    setInterval(() => {
+        board.digitalWrite(pin, (state ^= 1));
+    }, blinkInterval);
 });
-
