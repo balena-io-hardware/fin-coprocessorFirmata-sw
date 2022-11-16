@@ -1,0 +1,619 @@
+- commits:
+    - subject: Switch from balenaCI to flowzone
+      hash: 63ce421eea078df654e05366b8a2b1ef04b2344d
+      body: ""
+      footer:
+        Change-type: patch
+        change-type: patch
+        Signed-off-by: Heath Raftery (@hraftery) <heath.raftery@balena.io>
+        signed-off-by: Heath Raftery (@hraftery) <heath.raftery@balena.io>
+      author: Heath Raftery
+      nested: []
+  version: 3.0.4
+  title: ""
+  date: 2022-11-16T14:33:52.793Z
+- version: 3.0.3
+  date: 2021-04-09T10:55:43Z
+  commits:
+    - hash: 9faa7f2055cd2fcd964d30d2eec171a04698f95a
+      author: Alex Bucknall
+      footers:
+        change-type: patch
+        signed-off-by: Alex Bucknall <alexbucknall@balena.io>
+      subject: Added clarity for Firmata pin numbering in docs.
+      body: null
+- version: 3.0.2
+- date: 2020-07-02T11:51:59Z
+- commits:
+    - hash: 7060d2e7eeafce495dda4fed5d81576210e4ebad
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - footers:
+        change-type: patch
+- commits:
+    - footers:
+        signed-off-by: Alex Bucknall <alexbucknall@balena.io>
+- commits:
+    - subject: Corrected JS examples
+- commits:
+    - body: Documentation and formatting fixes for javascript examples
+- version: 3.0.1
+- date: 2020-06-04T10:38:17Z
+- commits:
+    - hash: 47ca477224110962fedc74038534be27a389b4b0
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - footers:
+        change-type: patch
+- commits:
+    - footers:
+        signed-off-by: Alex Bucknall <alexbucknall@balena.io>
+- commits:
+    - subject: Added validation to IDAC controls
+- commits:
+    - body: Sanity check on IDAC inputs
+- commits:
+    - hash: ed967262e27e4524b14559fb1f64ae37a204613d
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Merge branch 'master' into idac-tweaks
+- commits:
+    - body: null
+- version: 3.0.0
+- date: 2020-06-03T14:23:15Z
+- commits:
+    - hash: 8ee04128f6152d2ec9e0be52b06b9ad02b1fb41c
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - footers:
+        change-type: major
+- commits:
+    - footers:
+        signed-off-by: Alex Bucknall <alexbucknall@balena.io>
+- commits:
+    - subject: Added IDAC Functionality
+- commits:
+    - body: Adds IDAC functionality, updates README.md and cleans up JS examples.
+- commits:
+    - hash: e0b4e8e31369c19f2e929aceebf283e980daa100
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Tweaked README.md
+- commits:
+    - body: null
+- version: 2.0.2
+- date: 2020-05-07T10:51:12Z
+- commits:
+    - hash: 413ab1edd01501e5f2490f3cfae14881faeeea42
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - footers:
+        change-type: patch
+- commits:
+    - footers:
+        signed-off-by: Alex Bucknall <alexbucknall@balena.io>
+- commits:
+    - subject: Adds parallel jobs to Makefile
+- commits:
+    - body: Enables parallel tasks within makefile for faster builds.
+- commits:
+    - hash: 2f900d620296d5be8e261fd39f8e66579ec96236
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - footers:
+        change-type: patch
+- commits:
+    - footers:
+        signed-off-by: Alex Bucknall <alexbucknall@balena.io>
+- commits:
+    - subject: Updates CI to docker
+- commits:
+    - body: Enables Docker builds on CI
+- commits:
+    - hash: 425e024596b0f342a24af99ec45f7cfce8a01e09
+- commits:
+    - author: Roman Mazur
+- commits:
+    - footers:
+        change-type: patch
+- commits:
+    - footers:
+        signed-off-by: Roman Mazur <roman@balena.io>
+- commits:
+    - subject: Avoid Docker image publication
+- commits:
+    - body: null
+- version: 2.0.1
+- date: 2020-04-29T10:29:59Z
+- commits:
+    - hash: 38af5e6d0fa1d53f8ab27cd017894b10a9ed1478
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - footers:
+        change-type: patch
+- commits:
+    - footers:
+        signed-off-by: Alex Bucknall <alexbucknall@balena.io>
+- commits:
+    - subject: Fix for version tagging builds
+- commits:
+    - body: Fixed version tagging such that builds compiled with docker are not
+        labelled as dirty.
+- version: 2.0.0
+- date: 2020-04-29T10:10:20Z
+- commits:
+    - hash: de1f263a135a0dfd7cd4169722b41ff9cc6133ec
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - footers:
+        co-authored-by: Nicolas Tzovanis <nicolas@balena.io>
+- commits:
+    - subject: Added Initial Dockerfile to wrap build process
+- commits:
+    - body: Dockerfile simplifies build process and removes build dependencies.
+- commits:
+    - hash: 80a41d5a27c2bf73d6e382d36081feb831665aef
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - footers:
+        change-type: major
+- commits:
+    - footers:
+        signed-off-by: Alex Bucknall <alexbucknall@balena.io>
+- commits:
+    - subject: Added Dockerfile to build process
+- commits:
+    - body: Adds updated Dockerfile to simplify build process, README.md is updated to
+        reflect changes.
+- version: 1.1.1
+- date: 2020-04-27T14:01:50Z
+- commits:
+    - hash: fbc7524b6e50351d5959b60be0104f24687598b1
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - footers:
+        change-type: patch
+- commits:
+    - footers:
+        signed-off-by: Alex Bucknall <alexbucknall@balena.io>
+- commits:
+    - subject: Readme.md Fix
+- commits:
+    - body: Updates Readme.md for correct flashing info and clarity on I2C command.
+        Removes beta message.
+- version: 1.1.0
+- date: 2020-04-27T12:59:15Z
+- commits:
+    - hash: 172bcb637186ce9891b9ad0b31fc657ad2430d72
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Added node tests for i2c firmata
+- commits:
+    - body: null
+- commits:
+    - hash: 1f2b9b657d707130e88193038ae3ac6c11f234f0
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Updated makefile to build for devkit and balenaFin
+- commits:
+    - body: null
+- commits:
+    - hash: 49e4ab21b388cf19a7660358d237942830b24bdf
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Added testbot power example
+- commits:
+    - body: null
+- commits:
+    - hash: 414784b55fc5309d132a41294a4a32dbc9159d7b
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Updated makefile + firmware to pull git tag for version number
+- commits:
+    - body: null
+- commits:
+    - hash: 9555c4dbc6061cea89aa7ecc382f802840ef9945
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Changed string response handling
+- commits:
+    - body: null
+- commits:
+    - hash: 1dd4f5b1e8eeefd0b810fe994a4d034f737b9405
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - footers:
+        change-type: minor
+- commits:
+    - footers:
+        signed-off-by: Alex Bucknall <alexbucknall@balena.io>
+- commits:
+    - subject: I2C Read and Write Added to Implementation
+- commits:
+    - body: PR adds I2C functionality to firmata firmware along with error handling
+        and node examples.
+- commits:
+    - hash: 609c1ec3fd090cf4a006ccf16a3dceb9e6e92e9b
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: I2C defaults to external unless specified
+- commits:
+    - body: null
+- commits:
+    - hash: 78b5ced2ca8a30942f02c2075eb4e65a37c62e8a
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Added version check to testbot.js
+- commits:
+    - body: null
+- commits:
+    - hash: 53191bdd3829386e6a0d2bb3bab0604e5a6c39e8
+- commits:
+    - author: Rohan Fletcher
+- commits:
+    - subject: Fixed non-conformant data bitlength from 8bit to 7bit
+- commits:
+    - body: null
+- commits:
+    - hash: ce8e67d5c83ecad84a597e2d8684d08375a86fe4
+- commits:
+    - author: Rohan Fletcher
+- commits:
+    - subject: Limit size of sleep period argument to prevent overflow
+- commits:
+    - body: null
+- commits:
+    - hash: 277cd62891692e355cf8356c9dfe626c4227022d
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Added event trigger function to balena library
+- commits:
+    - body: null
+- commits:
+    - hash: 3f5da5fc4515808c0ff2c9da8209844b2550e1bf
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Added SYSEX command for sleep
+- commits:
+    - body: null
+- commits:
+    - hash: 26a4715d23807edeb2905c796006987d0096daa9
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Fixed incorrect power pin
+- commits:
+    - body: null
+- commits:
+    - hash: 1b3f06991e4a7354b2bb14e6258b665469aa9b64
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Added full uint64_t support
+- commits:
+    - body: null
+- commits:
+    - hash: 55ed074f2fba5b5297ffa8b793c87383b97ff9b2
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Removed printout
+- commits:
+    - body: null
+- commits:
+    - hash: 51d0ad1879f290b2ee68182af091bca9bcb4952e
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Added documentation for power down mode
+- commits:
+    - body: null
+- commits:
+    - hash: 50492195847faf82737a95f6ff8d7553ea72d914
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: tweaked info on sleep_period
+- commits:
+    - body: null
+- commits:
+    - hash: 06d26e192afa32789e7cfff31b394432234c9251
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Update README.md
+- commits:
+    - body: Cleaned up Balena SYSEX table
+- commits:
+    - hash: 7c7308136d321e413d49e377a32d0c47f02dd5b2
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Added macro for easy switching serial interface
+- commits:
+    - body: null
+- commits:
+    - hash: 06f5de1f0a5d677adab2cb26ec5f3314a0996b8b
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Exposed RTC
+- commits:
+    - body: null
+- commits:
+    - hash: 772d5db58cae0d331b541cd587ff254b2a597b30
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Added support for sleeping CM3
+- commits:
+    - body: null
+- commits:
+    - hash: c42c6f2f139d437a021af5e5ea150bfe2a9fae40
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Merge branch 'v0.0.2-develop' of
+        github.com:balena-io/balena-fin-coprocessor-firmata into v0.0.2-develop
+- commits:
+    - body: null
+- commits:
+    - hash: 65cec7073ce540ba1147d58b1f469ba56f3f0147
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Update README.md
+- commits:
+    - body: Corrected payload size to match RTC
+- commits:
+    - hash: ccd98d69f14a02fe7092f8c04924205010719afd
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: "Merge pull request #10 from balena-io/v0.0.2-develop"
+- commits:
+    - body: V0.0.2 develop
+- commits:
+    - hash: bacf5b3b17b3ab08e65b1d061fe73e331290c40e
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Update README.md
+- commits:
+    - body: RTC power down is now supported
+- commits:
+    - hash: fb5eb13f9696c42e30cd0145aa4940c0ea12ea86
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Update README.md
+- commits:
+    - body: Corrected power down sysex subcommand
+- commits:
+    - hash: ee53468ca5d0f83b63f735b67af4bb47a5e34141
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - footers:
+        change-type: patch
+- commits:
+    - footers:
+        signed-off-by: Alex Bucknall <alex.bucknall@gmail.com>
+- commits:
+    - subject: Update StandardFirmata.cpp
+- commits:
+    - body: "Removed redundant comment in powerOn() callback\r
+
+        \r"
+- commits:
+    - hash: 1a6625f0618f38280cb3161edf2e7fb732364307
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Added balena subcommands and extended sleep
+- commits:
+    - body: null
+- commits:
+    - hash: 22e376e888e713961552567f3412a556022d0821
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Fixed RTC issue
+- commits:
+    - body: null
+- commits:
+    - hash: 67e3846f67512363749f20a257bf1b77f80b07cc
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Adjusted sampling interval and fixed sleep func
+- commits:
+    - body: null
+- commits:
+    - hash: 53191bdd3829386e6a0d2bb3bab0604e5a6c39e8
+- commits:
+    - author: Rohan Fletcher
+- commits:
+    - subject: Fixed non-conformant data bitlength from 8bit to 7bit
+- commits:
+    - body: null
+- commits:
+    - hash: ce8e67d5c83ecad84a597e2d8684d08375a86fe4
+- commits:
+    - author: Rohan Fletcher
+- commits:
+    - subject: Limit size of sleep period argument to prevent overflow
+- commits:
+    - body: null
+- commits:
+    - hash: bc07bfe5896fe6713627c97d4299fa6a43c251c5
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Fixed capabilities to allow firmata.js to work
+- commits:
+    - body: null
+- commits:
+    - hash: 541e8f80d59a19941ec37c0bec7df4a93d3484a5
+- commits:
+    - author: Carlo Maria Curinga
+- commits:
+    - subject: "Merge pull request #12 from rohfle/v0.0.2-fix-data-bitlength"
+- commits:
+    - body: Fixed non-conformant data bitlength from 8bit to 7bit
+- commits:
+    - hash: 3f5da5fc4515808c0ff2c9da8209844b2550e1bf
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Added SYSEX command for sleep
+- commits:
+    - body: null
+- commits:
+    - hash: 26a4715d23807edeb2905c796006987d0096daa9
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Fixed incorrect power pin
+- commits:
+    - body: null
+- commits:
+    - hash: 1b3f06991e4a7354b2bb14e6258b665469aa9b64
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Added full uint64_t support
+- commits:
+    - body: null
+- commits:
+    - hash: 55ed074f2fba5b5297ffa8b793c87383b97ff9b2
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Removed printout
+- commits:
+    - body: null
+- commits:
+    - hash: 51d0ad1879f290b2ee68182af091bca9bcb4952e
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Added documentation for power down mode
+- commits:
+    - body: null
+- commits:
+    - hash: 50492195847faf82737a95f6ff8d7553ea72d914
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: tweaked info on sleep_period
+- commits:
+    - body: null
+- commits:
+    - hash: 06d26e192afa32789e7cfff31b394432234c9251
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Update README.md
+- commits:
+    - body: Cleaned up Balena SYSEX table
+- commits:
+    - hash: 7c7308136d321e413d49e377a32d0c47f02dd5b2
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Added macro for easy switching serial interface
+- commits:
+    - body: null
+- commits:
+    - hash: 06f5de1f0a5d677adab2cb26ec5f3314a0996b8b
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Exposed RTC
+- commits:
+    - body: null
+- commits:
+    - hash: 772d5db58cae0d331b541cd587ff254b2a597b30
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Added support for sleeping CM3
+- commits:
+    - body: null
+- commits:
+    - hash: c42c6f2f139d437a021af5e5ea150bfe2a9fae40
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Merge branch 'v0.0.2-develop' of
+        github.com:balena-io/balena-fin-coprocessor-firmata into v0.0.2-develop
+- commits:
+    - body: null
+- commits:
+    - hash: 65cec7073ce540ba1147d58b1f469ba56f3f0147
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Update README.md
+- commits:
+    - body: Corrected payload size to match RTC
+- commits:
+    - hash: 66cce9a9b86ad02a3c74c29aaa70e48ba13f8d38
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - footers:
+        change-type: major
+- commits:
+    - footers:
+        signed-off-by: Alex Bucknall <alex.bucknall@gmail.com>
+- commits:
+    - subject: Initial Beta Release
+- commits:
+    - body: null
+- commits:
+    - hash: 1abc2e8b78db2bbc86980b89bdafed13275b5679
+- commits:
+    - author: Alex Bucknall
+- commits:
+    - subject: Added note about including arm-none-eabi-gcc in path
+- commits:
+    - body: null
+- commits:
+    - hash: 05a427617941d15610d57d94f418bdc0388eba74
+- commits:
+    - author: Carlo Maria Curinga
+- commits:
+    - subject: Create repo.yml
+- commits:
+    - body: null
+- commits:
+    - hash: 23d7879ae88dbd0d433462c6ed102e188b85e2d1
+- commits:
+    - author: Carlo Maria Curinga
+- commits:
+    - subject: Update repo.yml
+- commits:
+    - body: null
